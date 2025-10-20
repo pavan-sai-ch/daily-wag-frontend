@@ -14,7 +14,7 @@ export const mockUsers = [
         email: 'john.doe@example.com',
         password: 'Password123!',
     },
-    // An admin user
+    // An admin user ex
     {
         id: 'admin001',
         role: 'admin',
