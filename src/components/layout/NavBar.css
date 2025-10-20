@@ -1,0 +1,84 @@
+/* ---- Main Navbar Container ---- */
+.navbar {
+    display: flex;
+    justify-content: space-between; /* Key property to space out items */
+    align-items: center;
+    padding: 1rem 2.5rem;
+    background-color: #30e1b2;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-family: sans-serif;
+    position: sticky; /* Makes the navbar stick to the top */
+    top: 0;
+    z-index: 1000;
+
+}
+
+/* ---- Logo / Brand Styling ---- */
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    text-decoration: none;
+}
+
+/* ---- Navigation Links Container ---- */
+.navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 2rem; /* Adds space between the nav items */
+}
+
+.nav-item {
+    display: inline-block;
+}
+
+/* ---- General Link Styling ---- */
+.nav-link {
+    color: #555;
+    text-decoration: none;
+    font-size: 1rem;
+    padding: 0.5rem 0;
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+/* ---- Hover Effect for Links ---- */
+.nav-link:hover {
+    color: #007bff;
+}
+
+/* Add a subtle underline effect on hover */
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: #007bff;
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+}
+
+.nav-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+}
+
+/* ---- Special Styling for the Login Button ---- */
+.nav-link-button {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 0.6rem 1.2rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.nav-link-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px); /* Slight lift effect on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}

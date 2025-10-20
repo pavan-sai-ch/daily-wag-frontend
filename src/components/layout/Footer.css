@@ -1,0 +1,15 @@
+.footer {
+    width: 100%;
+    padding: 2rem 0; /* Adds vertical spacing */
+    background-color: #f8f9fa; /* A light, neutral gray background */
+    text-align: center; /* Centers the text inside */
+    margin-top: auto; /* Pushes the footer to the bottom in a flexbox layout */
+    border-top: 1px solid #e7e7e7; /* A subtle top border for separation */
+}
+
+.footer p {
+    margin: 0; /* Removes default paragraph margin */
+    color: #6c757d; /* A soft text color */
+    font-family: sans-serif;
+    font-size: 0.9rem;
+}
