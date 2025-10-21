@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { loginSuccess } from '/src/store/authSlice.js';
 import './LoginPage.css';
 import { validateEmail, validatePassword, validateName, checkPasswordCriteria } from '/src/utils/validation.js';
-import { login, signup } from '/src/api/authService.js'; // Using the mock auth service
+import { login, signup } from '/src/api/authService.js';
 import PasswordCriteria from '/src/components/common/PasswordCriteria.jsx';
 
 const LoginPage = () => {
-    // State to toggle between Login and Sign Up views
     const [isLoginView, setIsLoginView] = useState(true);
-
-    // State to hold form input data
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
@@ -16,58 +16,42 @@ const LoginPage = () => {
         password: '',
         confirmPassword: '',
     });
-
-    // State to hold validation error messages for submission
     const [errors, setErrors] = useState({});
-
-    // State to track password criteria in real-time
     const [passwordCriteria, setPasswordCriteria] = useState({
         length: false,
         uppercase: false,
         number: false,
         specialChar: false,
     });
-
-    // State to handle loading feedback during API calls
     const [isLoading, setIsLoading] = useState(false);
 
-    // Handle input changes and real-time validation
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
 
-        // Real-time validation for the password field as the user types
         if (name === 'password') {
             const criteriaMet = checkPasswordCriteria(value);
             setPasswordCriteria(criteriaMet);
         }
     };
 
-    // Handle form submission and final validation
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setErrors({}); // Clear previous errors
+        setErrors({});
 
-        // --- Validation Logic ---
         const validationErrors = {};
+        if (!isLoginView) {
+            if (!validateName(formData.firstName)) validationErrors.firstName = 'First name is required.';
+            if (!validateName(formData.lastName)) validationErrors.lastName = 'Last name is required.';
+            const passwordErrors = validatePassword(formData.password);
+            if (passwordErrors.length > 0) validationErrors.password = 'Please meet all password requirements.';
+            if (formData.password !== formData.confirmPassword) validationErrors.confirmPassword = 'Passwords do not match.';
+        }
         if (!validateEmail(formData.email)) {
             validationErrors.email = 'Please enter a valid email address.';
-        }
-
-        if (!isLoginView) {
-            if (!validateName(formData.firstName)) {
-                validationErrors.firstName = 'First name is required.';
-            }
-            if (!validateName(formData.lastName)) {
-                validationErrors.lastName = 'Last name is required.';
-            }
-            const passwordErrors = validatePassword(formData.password);
-            if (passwordErrors.length > 0) {
-                validationErrors.password = 'Please meet all password requirements.';
-            }
-            if (formData.password !== formData.confirmPassword) {
-                validationErrors.confirmPassword = 'Passwords do not match.';
-            }
         }
 
         if (Object.keys(validationErrors).length > 0) {
@@ -79,39 +63,15 @@ const LoginPage = () => {
 
         try {
             if (isLoginView) {
-                // --- MOCK API CALL FOR LOGIN ---
                 const user = await login(formData.email, formData.password);
-
-                /*
-                // --- REAL BACKEND API CALL (Example) ---
-                // const response = await axios.post('/api/login', {
-                //   email: formData.email,
-                //   password: formData.password
-                // });
-                // const user = response.data;
-                */
-
                 console.log('Login successful:', user);
-                alert(`Welcome back, ${user.firstName}!`);
-                // TODO: Redirect to dashboard, update global auth state
+                dispatch(loginSuccess(user));
+                navigate('/profile');
             } else {
-                // --- MOCK API CALL FOR SIGNUP ---
                 const newUser = await signup(formData);
-
-                /*
-                // --- REAL BACKEND API CALL (Example) ---
-                // const response = await axios.post('/api/register', {
-                //   firstName: formData.firstName,
-                //   lastName: formData.lastName,
-                //   email: formData.email,
-                //   password: formData.password
-                // });
-                // const newUser = response.data;
-                */
-
                 console.log('Signup successful:', newUser);
                 alert(`Account created for ${newUser.firstName}! You can now log in.`);
-                setIsLoginView(true); // Switch to login view
+                setIsLoginView(true);
             }
         } catch (error) {
             setErrors({ api: error.message });
