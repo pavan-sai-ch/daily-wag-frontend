@@ -7,6 +7,8 @@ import LoginPage from '../pages/LoginPage.jsx';
 import AppointmentsPage from '../pages/AppointmentsPage.jsx';
 import StorePage from '../pages/StorePage.jsx';
 import AdoptionPage from '../pages/AdoptionPage.jsx';
+import ProtectedRoute from "./ProtectedRoute.jsx";
+import ProfilePage from "../pages/ProfilePage.jsx";
 
 const AppRouter = () => {
     return (
@@ -16,6 +18,16 @@ const AppRouter = () => {
             <Route path="/appointments" element={<AppointmentsPage />} /> //appointments route
             <Route path="/store" element={<StorePage />} /> //store route
             <Route path="/adoption" element={<AdoptionPage />} /> //adoption route
+
+            <Route
+                path="/profile"
+                element={
+                    <ProtectedRoute>
+                        <ProfilePage />
+                    </ProtectedRoute>
+                }
+            />
+
         </Routes>
     );
 };

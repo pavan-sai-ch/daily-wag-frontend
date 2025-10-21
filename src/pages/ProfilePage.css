@@ -1,0 +1,70 @@
+.profile-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: sans-serif;
+    min-height: 70vh;
+}
+
+.profile-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid #e7e7e7;
+    padding-bottom: 2rem;
+}
+
+.profile-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+}
+
+.profile-header p {
+    color: #6c757d;
+    font-size: 1.1rem;
+}
+
+.pets-section {
+    background-color: #ffffff;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.pets-section h2 {
+    margin-top: 0;
+    font-size: 1.8rem;
+    color: #333;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.no-pets-view {
+    text-align: center;
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 6px;
+}
+
+.no-pets-view h3 {
+    font-size: 1.5rem;
+    color: #555;
+    margin-top: 0;
+}
+
+.add-pet-button {
+    background-color: #007bff;
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    margin-top: 1rem;
+}
+
+.add-pet-button:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
