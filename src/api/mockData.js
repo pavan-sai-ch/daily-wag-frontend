@@ -4,7 +4,7 @@
 // NOTE: Passwords are in plain text here ONLY for this mock setup.
 // In a real database, they MUST be hashed.
 
-export const mockUsers = [
+export const initialMockUsers = [
     // A regular user/customer
     {
         id: 'user001',

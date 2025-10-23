@@ -1,0 +1,66 @@
+.pet-list-container {
+    display: grid;
+    grid-template-columns: 1fr; /* One column on small screens */
+    gap: 1.5rem;
+}
+
+.pet-card {
+    background: #fdfdfd;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.pet-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.pet-card-icon {
+    font-size: 2.5rem;
+    background: #f0f7ff;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #007bff;
+}
+
+.pet-card-info {
+    flex-grow: 1;
+}
+
+.pet-card-info h3 {
+    margin: 0 0 0.25rem 0;
+    color: #333;
+}
+
+.pet-card-info p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.pet-card-options {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: #aaa;
+    padding: 0.5rem;
+}
+
+/* Responsive layout for wider screens */
+@media (min-width: 768px) {
+    .pet-list-container {
+        grid-template-columns: repeat(2, 1fr); /* Two columns on tablets and up */
+    }
+}
