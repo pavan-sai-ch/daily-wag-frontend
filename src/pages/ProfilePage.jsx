@@ -3,26 +3,27 @@ import { useSelector } from 'react-redux';
 import './ProfilePage.css';
 import { getPetsByUserId, addPet, updatePet, removePet } from '../api/petService';
 import PetList from '../components/pets/PetList';
-import PetFormModal from '../components/pets/PetFormModal.jsx';
+import PetFormModal from '../components/pets/PetFormModal';
 import ConfirmModal from '../components/common/ConfirmModal';
 
 const ProfilePage = () => {
-    // 1. STATE MANAGEMENT
+    // Get user data from the Redux store
     const { user } = useSelector((state) => state.auth);
+
+    // State for pets
     const [pets, setPets] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    // State for which pet is currently being edited or removed
-    const [selectedPet, setSelectedPet] = useState(null);
-
-    // State for modal visibility
+    // State for modals
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
 
-    // 2. DATA FETCHING (EFFECT)
+    // State to track which pet is being edited or removed
+    const [selectedPet, setSelectedPet] = useState(null);
+
+    // Fetch user's pets when the component loads
     useEffect(() => {
-        // Function to load pets from the mock API
         const loadPets = async () => {
             if (user) {
                 try {
@@ -30,96 +31,109 @@ const ProfilePage = () => {
                     setPets(userPets);
                 } catch (error) {
                     console.error("Failed to load pets:", error);
-                    alert("Could not load your pets. Please refresh the page.");
+                    alert("Could not load your pets. Please try again.");
                 }
             }
             setIsLoading(false);
         };
 
         loadPets();
-    }, [user]); // Re-run this effect if the user object ever changes
+    }, [user]); // The effect re-runs if the user object changes
 
-    // 3. EVENT HANDLERS (Opening Modals)
-    // These functions are passed down to PetList -> PetCard
-    const handleAddNewPet = () => {
-        setSelectedPet(null); // Clear any selection
+    // --- Modal "Open" Handlers ---
+
+    const handleAddPetClick = () => {
         setIsAddModalOpen(true);
     };
 
     const handleEditPet = (pet) => {
-        setSelectedPet(pet); // Set the pet to be edited
+        setSelectedPet(pet);
         setIsEditModalOpen(true);
     };
 
     const handleRemovePet = (pet) => {
-        setSelectedPet(pet); // Set the pet to be removed
+        setSelectedPet(pet);
         setIsRemoveModalOpen(true);
     };
 
-    // 4. API SUBMISSION HANDLERS (Handling Modal Submissions)
+    // --- Modal "Submit" Handlers ---
+
+    // Called from PetFormModal when in "Add" mode
     const onAddSubmit = async (petData) => {
+        setIsLoading(true);
         try {
             const newPet = await addPet(petData, user.id);
-            setPets([...pets, newPet]); // Add new pet to the UI
-            setIsAddModalOpen(false); // Close modal
+            setPets([...pets, newPet]); // Add new pet to the local state
+            setIsAddModalOpen(false);
         } catch (error) {
             console.error("Failed to add pet:", error);
             alert("Could not add pet. Please try again.");
         }
+        setIsLoading(false);
     };
 
+    // Called from PetFormModal when in "Edit" mode
     const onUpdateSubmit = async (updatedData) => {
-        if (!selectedPet) return;
+        setIsLoading(true);
         try {
-            const updatedPet = await updatePet({ ...selectedPet, ...updatedData });
-            // Update the pet in the UI by replacing the old version
+            // Combine old pet data (like ID) with new form data
+            const petToUpdate = { ...selectedPet, ...updatedData };
+            const updatedPet = await updatePet(petToUpdate);
+
+            // Update the pet in the local state
             setPets(pets.map(p => p.id === updatedPet.id ? updatedPet : p));
-            setIsEditModalOpen(false); // Close modal
+            setIsEditModalOpen(false);
             setSelectedPet(null);
         } catch (error) {
             console.error("Failed to update pet:", error);
             alert("Could not update pet. Please try again.");
         }
+        setIsLoading(false);
     };
 
+    // Called from ConfirmModal
     const onRemoveConfirm = async () => {
-        if (!selectedPet) return;
+        setIsLoading(true);
         try {
             await removePet(selectedPet.id);
-            // Update the UI by filtering out the removed pet
+            // Remove the pet from the local state
             setPets(pets.filter(p => p.id !== selectedPet.id));
-            setIsRemoveModalOpen(false); // Close modal
+            setIsRemoveModalOpen(false);
             setSelectedPet(null);
         } catch (error) {
             console.error("Failed to remove pet:", error);
             alert("Could not remove pet. Please try again.");
         }
+        setIsLoading(false);
     };
 
-    // 5. RENDER LOGIC
+    // --- Render Logic ---
+
     const renderPetSection = () => {
         if (isLoading) {
             return <p>Loading pets...</p>;
         }
 
-        if (pets.length === 0) {
+        if (pets.length > 0) {
+            // This is the corrected part:
+            // We pass the handler functions down to PetList
             return (
-                <div className="no-pets-view">
-                    <h3>You haven't added any pets yet.</h3>
-                    <p>Add your furry friends to get started!</p>
-                    <button className="add-pet-button" onClick={handleAddNewPet}>
-                        Add a Pet
-                    </button>
-                </div>
+                <PetList
+                    pets={pets}
+                    onEditPet={handleEditPet}
+                    onRemovePet={handleRemovePet}
+                />
             );
         }
 
         return (
-            <PetList
-                pets={pets}
-                onEdit={handleEditPet}
-                onRemove={handleRemovePet}
-            />
+            <div className="no-pets-view">
+                <h3>You haven't added any pets yet.</h3>
+                <p>Add your furry friends to get started!</p>
+                <button className="add-pet-button" onClick={handleAddPetClick}>
+                    Add a Pet
+                </button>
+            </div>
         );
     };
 
@@ -135,7 +149,7 @@ const ProfilePage = () => {
                     <h2>My Pets</h2>
                     {/* Show "Add Pet" button in header if user already has pets */}
                     {pets.length > 0 && !isLoading && (
-                        <button className="add-pet-button-small" onClick={handleAddNewPet}>
+                        <button className="add-pet-button-small" onClick={handleAddPetClick}>
                             + Add Pet
                         </button>
                     )}
@@ -143,11 +157,11 @@ const ProfilePage = () => {
                 {renderPetSection()}
             </div>
 
-            {/* --- MODALS --- */}
-            {/* These are rendered here but only visible when their 'isOpen' prop is true */}
+            {/* --- Modals --- */}
 
             {/* Add Pet Modal */}
             <PetFormModal
+                mode="add"
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 onSubmit={onAddSubmit}
@@ -155,11 +169,11 @@ const ProfilePage = () => {
 
             {/* Edit Pet Modal */}
             <PetFormModal
+                mode="edit"
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 onSubmit={onUpdateSubmit}
                 initialData={selectedPet}
-                isEditMode={true}
             />
 
             {/* Remove Pet Confirmation Modal */}

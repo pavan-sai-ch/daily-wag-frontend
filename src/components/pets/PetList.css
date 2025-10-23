@@ -64,3 +64,58 @@
         grid-template-columns: repeat(2, 1fr); /* Two columns on tablets and up */
     }
 }
+
+.pet-card {
+    position: relative;
+}
+
+/* The kebab button (⋮) */
+.pet-card-options {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    color: #aaa;
+    padding: 0.5rem;
+    line-height: 1;
+    position: relative;
+    z-index: 10;
+}
+
+/* The dropdown menu itself */
+.pet-menu-dropdown {
+    display: block; /* React handles showing/hiding, so this can just be block */
+    position: absolute;
+    top: 40px; /* Position it below the button */
+    right: 1.5rem; /* Align to the right side of the card */
+    background: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 0; /* Space for the buttons inside */
+    width: 160px;
+    z-index: 100; /* Make sure it's on top */
+    border: 1px solid #eee;
+}
+
+/* The buttons inside the dropdown */
+.pet-menu-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
+}
+
+.pet-menu-dropdown button:hover {
+    background-color: #f8f9fa;
+}
+
+/* Special color for the remove button */
+.pet-menu-dropdown button.remove {
+    color: #d93025;
+}
