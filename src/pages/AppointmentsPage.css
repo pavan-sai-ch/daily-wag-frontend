@@ -1,0 +1,96 @@
+.appointments-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: sans-serif;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.07);
+}
+
+/* --- Header --- */
+.appointments-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 2rem;
+}
+
+.appointments-header h2 {
+    font-size: 2.5rem;
+    color: #333;
+    margin: 0 0 0.5rem 0;
+}
+
+.appointments-header p {
+    font-size: 1.1rem;
+    color: #6c757d;
+    margin: 0;
+}
+
+/* --- Pet Selector --- */
+.pet-selector-container {
+    margin-bottom: 2rem;
+}
+
+.pet-selector-container label {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 0.75rem;
+}
+
+.pet-selector-container select {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    box-sizing: border-box; /* Important for 100% width */
+}
+
+.pet-selector-container select:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+}
+
+/* --- Tab Navigation --- */
+.tab-navigation {
+    display: flex;
+    border-bottom: 2px solid #eee;
+    margin-bottom: 2rem;
+}
+
+.tab-link {
+    flex: 1; /* Make buttons share space equally */
+    padding: 1rem 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    color: #6c757d; /* Inactive tab color */
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent; /* Placeholder for active state */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: -2px; /* Pulls text down to sit on the line */
+}
+
+.tab-link:hover {
+    background-color: #f8f9fa;
+    color: #333;
+}
+
+.tab-link.active {
+    color: #007bff; /* Active tab color */
+    border-bottom-color: #007bff; /* Active tab underline */
+}
+
+/* --- Tab Content --- */
+.tab-content {
+    /* This container just holds the active form */
+    padding-top: 1rem;
+}
+
