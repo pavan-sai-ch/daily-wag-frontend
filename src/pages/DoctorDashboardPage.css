@@ -1,0 +1,32 @@
+.doctor-dashboard-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 2rem;
+    font-family: sans-serif;
+}
+
+.dashboard-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 2rem;
+}
+
+.dashboard-header h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin: 0;
+}
+
+.dashboard-layout {
+    display: flex;
+    gap: 2rem;
+}
+
+.dashboard-main {
+    flex: 2; /* Takes 2/3 of the space */
+}
+
+.dashboard-sidebar {
+    flex: 1; /* Takes 1/3 of the space */
+}

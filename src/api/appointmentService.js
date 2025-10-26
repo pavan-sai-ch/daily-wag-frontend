@@ -43,3 +43,14 @@ export const bookAppointment = async (apptData) => {
 
     return newAppointment;
 };
+/**
+ * Fetches all appointments for a specific doctor.
+ * @param {string} doctorId - The ID of the doctor.
+ */
+export const getAppointmentsByDoctorId = async (doctorId) => {
+    await simulateNetworkRequest();
+    const allAppointments = getAppointments();
+    // We will just filter by doctorId.
+    // In a real app, you'd also fetch pet and user details.
+    return allAppointments.filter(app => app.doctorId === doctorId);
+};
