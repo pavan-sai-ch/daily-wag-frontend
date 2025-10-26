@@ -101,12 +101,14 @@ const LoginPage = () => {
                 dispatch(loginSuccess(user));
 
                 // Role-Based Redirection
-                if (user.role === 'doctor') {
+                if (user.role === 'admin') {
+                    navigate('/admin/dashboard');
+                } else if (user.role === 'doctor') {
                     navigate('/doctor/dashboard');
                 } else if (user.role === 'customer') {
                     navigate('/profile');
                 } else {
-                    navigate('/'); // Default for admin or other roles
+                    navigate('/');
                 }
 
             } else {

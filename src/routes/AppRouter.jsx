@@ -16,6 +16,7 @@ import DoctorDashboardPage from '/src/pages/DoctorDashboardPage.jsx';
 
 // --- Route Protector Imports ---
 import RoleBasedRoute from '/src/routes/RoleBasedRoute.jsx';
+import AdminDashboardPage from "../pages/AdminDashboardPage.jsx";
 
 /**
  * AppRouter
@@ -56,6 +57,14 @@ const AppRouter = () => {
                 element={
                     <RoleBasedRoute allowedRoles={['doctor']}>
                         <DoctorDashboardPage />
+                    </RoleBasedRoute>
+                }
+            />
+            <Route
+                path="/admin/dashboard"
+                element={
+                    <RoleBasedRoute allowedRoles={['admin']}>
+                        <AdminDashboardPage />
                     </RoleBasedRoute>
                 }
             />

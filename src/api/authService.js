@@ -91,3 +91,13 @@ export const signup = async (userData) => {
     const { password: _, ...userWithoutPassword } = newUser;
     return Promise.resolve(userWithoutPassword);
 };
+
+// ... (at the end of the file)
+/**
+ * Gets all users from localStorage (Admin Only).
+ * @returns {Array} An array of user objects.
+ */
+export const getAllUsers = ()=> {
+    // In a real app, this would be a protected endpoint.
+    return JSON.parse(localStorage.getItem(DB_KEY)) || [];
+};

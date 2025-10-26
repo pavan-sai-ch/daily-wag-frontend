@@ -1,111 +1,90 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { bookAppointment } from '../../api/appointmentService.js';
-import './GroomingForm.css'
-/**
- * Component for the Grooming booking form.
- * This is displayed inside a tab on the AppointmentsPage.
- * * @param {object} props
- * @param {string} props.selectedPetId - The ID of the pet selected on the main page.
- */
-const GroomingForm = ({ selectedPetId }) => {
-    const { user } = useSelector((state) => state.auth); // Get user from Redux
-    const [service, setService] = useState('basic');
+import './GroomingForm.css'; // This file needs to be in the same folder
+import { bookGrooming } from '/src/api/appointmentService.js'; // Using absolute path
+
+const GroomingForm = ({ pets, selectedPetId, userId }) => {
+    // Form state
+    const [serviceType, setServiceType] = useState('Basic Wash');
     const [dateTime, setDateTime] = useState('');
     const [comments, setComments] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const [message, setMessage] = useState(null); // To show success/error messages
+
+    // Find the currently selected pet object
+    const selectedPet = pets.find(p => p.id === selectedPetId);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        // Basic validation
         if (!selectedPetId) {
-            setMessage({ type: 'error', text: 'Please select a pet first.' });
+            alert('Please select a pet first.');
             return;
         }
         if (!dateTime) {
-            setMessage({ type: 'error', text: 'Please select a date and time.' });
+            alert('Please select a date and time.');
             return;
         }
 
         setIsLoading(true);
-        setMessage(null);
-
         const appointmentData = {
-            userId: user.id,
+            userId,
             petId: selectedPetId,
-            type: 'Grooming', // As defined in your project proposal
-            service: service,
-            dateTime: dateTime,
-            comments: comments,
+            serviceType,
+            dateTime,
+            comments,
         };
 
         try {
-            await bookAppointment(appointmentData);
-            setMessage({ type: 'success', text: 'Grooming appointment booked successfully!' });
-
-            // Reset form
-            setService('basic');
+            await bookGrooming(appointmentData);
+            alert(`Appointment requested for ${selectedPet.name}! An admin will confirm it soon.`);
+            // Clear the form
             setDateTime('');
             setComments('');
         } catch (error) {
-            setMessage({ type: 'error', text: 'Failed to book appointment. Please try again.' });
-            console.error("Booking failed:", error);
+            console.error("Failed to book grooming:", error);
+            alert("Failed to book appointment. Please try again.");
         }
         setIsLoading(false);
     };
 
     return (
         <div className="appointment-form-container">
-            <h3>Book a Grooming Session</h3>
-            <p>Select a service and a time for your pet.</p>
-
+            <h3>Book a Grooming Service</h3>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="groomingService">Service Type</label>
+                    <label htmlFor="grooming-service">Service Type</label>
                     <select
-                        id="groomingService"
-                        value={service}
-                        onChange={(e) => setService(e.target.value)}
+                        id="grooming-service"
+                        value={serviceType}
+                        onChange={(e) => setServiceType(e.target.value)}
                     >
-                        <option value="basic">Basic Wash</option>
-                        <option value="premium">Premium Groom</option>
-                        <option value="luxury">Luxury Spa</option>
+                        <option value="Basic Wash">Basic Wash</option>
+                        <option value="Premium Groom">Premium Groom (Wash & Cut)</option>
+                        <option value="Luxury Spa">Luxury Spa (All included)</option>
                     </select>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="groomingDateTime">Date and Time</label>
+                    <label htmlFor="grooming-datetime">Date & Time</label>
                     <input
                         type="datetime-local"
-                        id="groomingDateTime"
+                        id="grooming-datetime"
                         value={dateTime}
                         onChange={(e) => setDateTime(e.target.value)}
-                        min={new Date().toISOString().slice(0, 16)} // Prevent booking in the past
                     />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="groomingComments">Additional Comments (Optional)</label>
+                    <label htmlFor="grooming-comments">Additional Comments (Optional)</label>
                     <textarea
-                        id="groomingComments"
-                        rows="3"
+                        id="grooming-comments"
                         value={comments}
                         onChange={(e) => setComments(e.target.value)}
-                        placeholder="E.g., sensitive skin, nervous dog, etc."
-                    ></textarea>
+                        placeholder="e.g., uses sensitive skin shampoo, gets nervous..."
+                    />
                 </div>
 
-                <button typeE="submit" className="submit-button" disabled={!selectedPetId || isLoading}>
-                    {isLoading ? 'Booking...' : 'Book Grooming'}
+                <button type="submit" className="submit-button" disabled={isLoading || !selectedPetId}>
+                    {isLoading ? 'Booking...' : (selectedPetId ? 'Request Appointment' : 'Please select a pet')}
                 </button>
-
-                {message && (
-                    <p className={`form-message ${message.type}`}>
-                        {message.text}
-                    </p>
-                )}
             </form>
         </div>
     );

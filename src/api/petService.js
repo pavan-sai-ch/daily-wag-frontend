@@ -3,17 +3,16 @@ const PETS_DB_KEY = 'mockPets';
 const IMMUNIZATIONS_DB_KEY = 'mockImmunizations';
 
 // --- Mock Data (Used for Seeding) ---
-// We seed an empty object for immunizations. 
-// A real app might have default records for new pets.
+// We seed an empty object for immunizations.
 const seedImmunizationData = {};
 
-// --- Database Helper Functions (Internal) ---
+// --- Internal Database Helper Functions ---
 
 /**
- * Gets all pets from localStorage.
+ * (Internal) Gets all pets from localStorage.
  * @returns {Array} An array of all pet objects.
  */
-const getAllPets = () => {
+const _getAllPets = () => {
     try {
         return JSON.parse(localStorage.getItem(PETS_DB_KEY)) || [];
     } catch (error) {
@@ -23,18 +22,18 @@ const getAllPets = () => {
 };
 
 /**
- * Saves the entire pet array back to localStorage.
+ * (Internal) Saves the entire pet array back to localStorage.
  * @param {Array} pets - The new array of pets.
  */
-const savePets = (pets) => {
+const _savePets = (pets) => {
     localStorage.setItem(PETS_DB_KEY, JSON.stringify(pets));
 };
 
 /**
- * Gets all immunization records from localStorage.
+ * (Internal) Gets all immunization records from localStorage.
  * @returns {object} An object with pet IDs as keys.
  */
-const getAllImmunizations = () => {
+const _getAllImmunizations = () => {
     try {
         return JSON.parse(localStorage.getItem(IMMUNIZATIONS_DB_KEY)) || {};
     } catch (error) {
@@ -44,7 +43,15 @@ const getAllImmunizations = () => {
 };
 
 /**
- * Function to simulate a network request delay.
+ * (Internal) Saves all immunization records back to localStorage.
+ * @param {object} records - The records object.
+ */
+const _saveImmunizations = (records) => {
+    localStorage.setItem(IMMUNIZATIONS_DB_KEY, JSON.stringify(records));
+};
+
+/**
+ * (Internal) Function to simulate a network request delay.
  * @param {number} delay - The delay in milliseconds.
  */
 const simulateNetworkRequest = (delay = 300) => {
@@ -57,8 +64,8 @@ const simulateNetworkRequest = (delay = 300) => {
  * Initializes the "pets database" in localStorage if it doesn't exist.
  */
 export const initializePetDatabase = () => {
-    if (!localStorage.getItem(PETS_DB_KEY)) {
-        localStorage.setItem(PETS_DB_KEY, JSON.stringify([]));
+    if (localStorage.getItem(PETS_DB_KEY) === null) {
+        _savePets([]); // Start with an empty array
     }
 };
 
@@ -66,34 +73,43 @@ export const initializePetDatabase = () => {
  * Initializes the "immunizations database" in localStorage.
  */
 export const initializeImmunizationDatabase = () => {
-    if (!localStorage.getItem(IMMUNIZATIONS_DB_KEY)) {
-        localStorage.setItem(IMMUNIZATIONS_DB_KEY, JSON.stringify(seedImmunizationData));
+    if (localStorage.getItem(IMMUNIZATIONS_DB_KEY) === null) {
+        _saveImmunizations(seedImmunizationData); // Start with an empty object
     }
 };
 
-// --- Exportable Pet API Functions (CRUD) ---
+// --- Exportable API Functions ---
 
 /**
- * Fetches all pets belonging to a specific user.
+ * (Admin) Fetches ALL pets from the database.
+ * @returns {Promise<Array>} A promise that resolves with an array of all pets.
+ */
+export const getAllPets = async () => {
+    await simulateNetworkRequest();
+    return _getAllPets();
+};
+
+/**
+ * (Customer) Fetches all pets belonging to a specific user.
  * @param {string} userId - The ID of the logged-in user.
  * @returns {Promise<Array>} A promise that resolves with an array of the user's pets.
  */
 export const getPetsByUserId = async (userId) => {
     await simulateNetworkRequest();
-    const allPets = getAllPets();
+    const allPets = _getAllPets();
     const userPets = allPets.filter(pet => pet.userId === userId);
     return userPets;
 };
 
 /**
- * Adds a new pet to the database for a specific user.
+ * (Customer) Adds a new pet to the database for a specific user.
  * @param {object} petData - The new pet's data (e.g., { name, breed, age }).
  * @param {string} userId - The ID of the owner.
  * @returns {Promise<object>} A promise that resolves with the newly created pet object.
  */
 export const addPet = async (petData, userId) => {
     await simulateNetworkRequest();
-    const allPets = getAllPets();
+    const allPets = _getAllPets();
 
     const newPet = {
         ...petData,
@@ -102,79 +118,75 @@ export const addPet = async (petData, userId) => {
     };
 
     allPets.push(newPet);
-    savePets(allPets);
+    _savePets(allPets);
 
     return newPet;
 };
 
 /**
- * Updates an existing pet in the database.
+ * (Customer) Updates an existing pet in the database.
  * @param {object} updatedPetData - The complete pet object with updated info.
  * @returns {Promise<object>} A promise that resolves with the updated pet object.
  */
 export const updatePet = async (updatedPetData) => {
     await simulateNetworkRequest();
-    let allPets = getAllPets();
+    let allPets = _getAllPets();
 
-    // Find the index of the pet to update
     const petIndex = allPets.findIndex(p => p.id === updatedPetData.id);
 
     if (petIndex === -1) {
         throw new Error("Pet not found for update.");
     }
 
-    // Replace the old pet object with the new one
     allPets[petIndex] = updatedPetData;
-    savePets(allPets);
+    _savePets(allPets);
 
     return updatedPetData;
 };
 
 /**
- * Removes a pet from the database.
+ * (Customer) Removes a pet from the database.
  * @param {string} petId - The ID of the pet to remove.
  * @returns {Promise<void>}
  */
 export const removePet = async (petId) => {
     await simulateNetworkRequest();
-    let allPets = getAllPets();
 
-    // Create a new array without the removed pet
+    // Remove the pet
+    let allPets = _getAllPets();
     const updatedPets = allPets.filter(p => p.id !== petId);
+    _savePets(updatedPets);
 
-    savePets(updatedPets);
-
-    // We should also remove associated immunization records
-    let allImmunizations = getAllImmunizations();
+    // Also remove associated immunization records
+    let allImmunizations = _getAllImmunizations();
     if (allImmunizations[petId]) {
         delete allImmunizations[petId];
-        localStorage.setItem(IMMUNIZATIONS_DB_KEY, JSON.stringify(allImmunizations));
+        _saveImmunizations(allImmunizations);
     }
 
     return;
 };
 
-// --- Exportable Immunization API Function ---
-
 /**
- * Fetches immunization records for a specific pet.
+ * (Customer) Fetches immunization records for a specific pet.
  * @param {string} petId - The ID of the pet.
  */
 export const getImmunizationRecords = async (petId) => {
     await simulateNetworkRequest();
-    const allRecords = getAllImmunizations();
+    const allRecords = _getAllImmunizations();
 
     const petRecords = allRecords[petId];
 
+    // Check if specific records exist
     if (petRecords && petRecords.length > 0) {
         return petRecords;
     }
 
     // Return default mock data if no specific records are found
+    // This simulates a new pet's default vaccination schedule.
     return [
-        { id: 'imm1', name: 'Rabies', date: '2024-01-15', status: 'Up to Date' },
-        { id: 'imm2', name: 'Bordetella', date: '2024-01-15', status: 'Up to Date' },
+        { id: 'imm1', name: 'Rabies', date: 'Not Set', status: 'Pending' },
+        { id: 'imm2', name: 'Bordetella', date: 'Not Set', status: 'Pending' },
         { id: 'imm3', name: 'Canine Distemper', date: 'Not Set', status: 'Pending' }
     ];
 };
-

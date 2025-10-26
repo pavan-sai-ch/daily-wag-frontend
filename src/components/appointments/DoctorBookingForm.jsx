@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { getDoctors } from '../../api/doctorService';
-import { bookAppointment } from '../../api/appointmentService';
+import {bookDoctorAppointment, bookGrooming} from '../../api/appointmentService';
 import './DoctorBookingForm.css'
 /**
  * Component for the Doctor booking form.
@@ -65,7 +65,7 @@ const DoctorBookingForm = ({ selectedPetId }) => {
         };
 
         try {
-            await bookAppointment(appointmentData);
+            await bookGrooming(appointmentData);
             setMessage({ type: 'success', text: 'Doctor appointment booked successfully!' });
 
             // Reset form
