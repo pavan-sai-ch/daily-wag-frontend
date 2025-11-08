@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import './GroomingForm.css'; // This file needs to be in the same folder
-import { bookGrooming } from '/src/api/appointmentService.js'; // Using absolute path
+import './GroomingForm.css';
+import { bookGrooming } from '/src/api/appointmentService.js';
 
 const GroomingForm = ({ pets, selectedPetId, userId }) => {
     // Form state
@@ -9,8 +9,10 @@ const GroomingForm = ({ pets, selectedPetId, userId }) => {
     const [comments, setComments] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    // Find the currently selected pet object
-    const selectedPet = pets.find(p => p.id === selectedPetId);
+    // --- THIS IS THE FIX ---
+    // We use (pets || []) to provide a default empty array
+    // This prevents the .find() method from crashing if 'pets' is undefined.
+    const selectedPet = (pets || []).find(p => p.id === selectedPetId);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
