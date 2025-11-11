@@ -1,0 +1,21 @@
+# Use version 3.8 of Docker Compose
+version: '3.8'
+
+# Define all the services (containers) your app needs
+services:
+
+  # 1. The React Frontend Service
+  frontend:
+    # Build this service using the Dockerfile in the current directory
+    build:
+      context: .
+    ports:
+      # Map your computer's port 5173 to the container's port 5173 (for Vite)
+      - "5173:5173"
+    volumes:
+      # This is the key for live-reloading:
+      # It syncs your local project folder with the /app folder in the container.
+      - ./:/app
+      # This anonymous volume tells Docker to use the container's node_modules
+      # and not overwrite it with your local (and possibly incompatible) one.
+      - /app/node_modules
