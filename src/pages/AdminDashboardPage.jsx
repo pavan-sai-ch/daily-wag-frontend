@@ -1,25 +1,29 @@
 import React, { useState } from 'react';
 import './AdminDashboardPage.css';
-import AppointmentManagement from '../components/admin/AppointmentManagement';
-// Import your placeholder components
-// import UserManagement from '../components/admin/UserManagement';
-// import AdoptionManagement from '../components/admin/AdoptionManagement';
-// import StoreManagement from '../components/admin/StoreManagement';
+
+// Import the management components
+// These must exist in src/components/admin/ for the dashboard to work
+import AppointmentManagement from '../components/admin/AppointmentManagement.jsx';
+import OrderManagement from '../components/admin/OrderManagement.jsx';
+import AdoptionManagement from '../components/admin/AdoptionManagement.jsx';
+import UserManagement from '../components/admin/UserManagement.jsx';
 
 const AdminDashboardPage = () => {
-    // We'll use state to manage which tab is active
+    // State to track the currently active tab
+    // Default to 'appointments' as it's usually the most frequent task
     const [activeTab, setActiveTab] = useState('appointments');
 
+    // Helper function to render the correct component based on state
     const renderTabContent = () => {
         switch (activeTab) {
             case 'appointments':
                 return <AppointmentManagement />;
-            case 'users':
-                return <div><h2>User Management (Coming Soon)</h2></div>;
             case 'adoption':
-                return <div><h2>Adoption Management (Coming Soon)</h2></div>;
+                return <AdoptionManagement />;
             case 'store':
-                return <div><h2>Store Management (Coming Soon)</h2></div>;
+                return <OrderManagement />;
+            case 'users':
+                return <UserManagement />;
             default:
                 return <AppointmentManagement />;
         }
@@ -29,31 +33,38 @@ const AdminDashboardPage = () => {
         <div className="admin-dashboard-container">
             <div className="admin-header">
                 <h1>Admin Dashboard</h1>
+                <p>Manage appointments, orders, users, and adoption requests.</p>
             </div>
 
+            {/* Tab Navigation Bar */}
             <nav className="admin-tab-nav">
                 <button
                     className={activeTab === 'appointments' ? 'active' : ''}
-                    onClick={() => setActiveTab('appointments')}>
+                    onClick={() => setActiveTab('appointments')}
+                >
                     Appointments
                 </button>
                 <button
-                    className={activeTab === 'users' ? 'active' : ''}
-                    onClick={() => setActiveTab('users')}>
-                    Users
-                </button>
-                <button
                     className={activeTab === 'adoption' ? 'active' : ''}
-                    onClick={() => setActiveTab('adoption')}>
-                    Adoption
+                    onClick={() => setActiveTab('adoption')}
+                >
+                    Adoption Requests
                 </button>
                 <button
                     className={activeTab === 'store' ? 'active' : ''}
-                    onClick={() => setActiveTab('store')}>
-                    Store
+                    onClick={() => setActiveTab('store')}
+                >
+                    Store Orders
+                </button>
+                <button
+                    className={activeTab === 'users' ? 'active' : ''}
+                    onClick={() => setActiveTab('users')}
+                >
+                    Users
                 </button>
             </nav>
 
+            {/* Main Content Area */}
             <main className="admin-tab-content">
                 {renderTabContent()}
             </main>

@@ -15,8 +15,9 @@ const PetList = ({ pets, onEditPet, onRemovePet }) => {
             {pets.map(pet => (
                 // This is the key: We pass the functions down to each card.
                 // The PetCard component receives them as `onEdit` and `onRemove`.
+
                 <PetCard
-                    key={pet.id}
+                    key={pet.pet_id}
                     pet={pet}
                     onEdit={onEditPet}
                     onRemove={onRemovePet}

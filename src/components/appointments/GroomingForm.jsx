@@ -1,21 +1,21 @@
 import React, { useState } from 'react';
 import './GroomingForm.css';
-import { bookGrooming } from '/src/api/appointmentService.js';
+import { bookGrooming } from '../../api/appointmentService.js';
 
 const GroomingForm = ({ pets, selectedPetId, userId }) => {
-    // Form state
+    // Form state management
     const [serviceType, setServiceType] = useState('Basic Wash');
     const [dateTime, setDateTime] = useState('');
     const [comments, setComments] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    // --- THIS IS THE FIX ---
-    // We use (pets || []) to provide a default empty array
-    // This prevents the .find() method from crashing if 'pets' is undefined.
-    const selectedPet = (pets || []).find(p => p.id === selectedPetId);
+    // Safe find logic
+    const selectedPet = (pets || []).find(p => p.pet_id === selectedPetId);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validation
         if (!selectedPetId) {
             alert('Please select a pet first.');
             return;
@@ -26,6 +26,7 @@ const GroomingForm = ({ pets, selectedPetId, userId }) => {
         }
 
         setIsLoading(true);
+
         const appointmentData = {
             userId,
             petId: selectedPetId,
@@ -36,8 +37,10 @@ const GroomingForm = ({ pets, selectedPetId, userId }) => {
 
         try {
             await bookGrooming(appointmentData);
-            alert(`Appointment requested for ${selectedPet.name}! An admin will confirm it soon.`);
-            // Clear the form
+
+            alert(`Appointment requested for ${selectedPet ? selectedPet.pet_name : 'your pet'}! An admin will confirm it soon.`);
+
+            // Clear the form fields
             setDateTime('');
             setComments('');
         } catch (error) {
@@ -71,6 +74,7 @@ const GroomingForm = ({ pets, selectedPetId, userId }) => {
                         id="grooming-datetime"
                         value={dateTime}
                         onChange={(e) => setDateTime(e.target.value)}
+                        min={new Date().toISOString().slice(0, 16)}
                     />
                 </div>
 
@@ -93,4 +97,3 @@ const GroomingForm = ({ pets, selectedPetId, userId }) => {
 };
 
 export default GroomingForm;
-

@@ -16,8 +16,9 @@ const AppointmentsPage = () => {
     const preSelectedPet = location.state?.selectedPet;
 
     // State for the active tab and the currently selected pet
-    const [activeTab, setActiveTab] = useState('grooming'); // 'grooming' or 'medical'
-    const [selectedPetId, setSelectedPetId] = useState(preSelectedPet ? preSelectedPet.id : '');
+    // FIX 1: Use .pet_id instead of .id
+    const [activeTab, setActiveTab] = useState('grooming');
+    const [selectedPetId, setSelectedPetId] = useState(preSelectedPet ? preSelectedPet.pet_id : '');
     const [isLoadingPets, setIsLoadingPets] = useState(true);
 
     // Fetch the user's pets to populate the dropdown
@@ -28,8 +29,9 @@ const AppointmentsPage = () => {
                     const pets = await getPetsByUserId(user.id);
                     setUserPets(pets);
                     // If no pet was pre-selected, default to the user's first pet
+                    // FIX 2: Use .pet_id here
                     if (!preSelectedPet && pets.length > 0) {
-                        setSelectedPetId(pets[0].id);
+                        setSelectedPetId(pets[0].pet_id);
                     }
                 } catch (error) {
                     console.error("Failed to fetch pets:", error);
@@ -38,7 +40,7 @@ const AppointmentsPage = () => {
             setIsLoadingPets(false);
         };
         fetchPets();
-    }, [user, preSelectedPet]); // Re-run if user changes
+    }, [user, preSelectedPet]);
 
     return (
         <div className="appointments-container">
@@ -62,8 +64,9 @@ const AppointmentsPage = () => {
                         <>
                             <option value="">-- Select a pet --</option>
                             {userPets.map(pet => (
-                                <option key={pet.id} value={pet.id}>
-                                    {pet.name} ({pet.breed})
+                                /* FIX 3: Use .pet_id for key and value */
+                                <option key={pet.pet_id} value={pet.pet_id}>
+                                    {pet.pet_name} ({pet.pet_breed})
                                 </option>
                             ))}
                         </>
@@ -102,4 +105,3 @@ const AppointmentsPage = () => {
 };
 
 export default AppointmentsPage;
-

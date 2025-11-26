@@ -1,0 +1,121 @@
+.adoption-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px; /* Softer, rounder corners */
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.adoption-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.pet-image-container {
+    width: 100%;
+    height: 220px; /* Slightly taller image area */
+    background-color: #f8f9fa;
+    position: relative;
+    overflow: hidden;
+}
+
+.pet-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.adoption-card:hover .pet-image {
+    transform: scale(1.05); /* Subtle zoom effect on hover */
+}
+
+.pet-category-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #333;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.pet-details {
+    padding: 1.5rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.pet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.25rem;
+}
+
+.pet-name {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #2c3e50;
+}
+
+.pet-age {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.pet-breed {
+    color: #555;
+    font-weight: 500;
+    margin: 0 0 1rem 0;
+}
+
+.medical-info {
+    background-color: #e9f7ef;
+    color: #155724;
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 1.5rem;
+}
+
+.medical-label {
+    font-weight: bold;
+}
+
+.pet-footer {
+    margin-top: auto;
+}
+
+.adopt-btn {
+    width: 100%;
+    padding: 0.8rem;
+    background-color: #ff6b6b; /* A warm, "heart" color */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.adopt-btn:hover:not(:disabled) {
+    background-color: #ee5253;
+}
+
+.adopt-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

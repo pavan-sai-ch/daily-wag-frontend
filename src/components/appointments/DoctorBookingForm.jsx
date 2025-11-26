@@ -1,153 +1,136 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { getDoctors } from '../../api/doctorService';
-import {bookDoctorAppointment, bookGrooming} from '../../api/appointmentService';
-import './DoctorBookingForm.css'
-/**
- * Component for the Doctor booking form.
- * This is displayed inside the "Medical" tab.
- * * @param {object} props
- * @param {string} props.selectedPetId - The ID of the pet selected on the main page.
- */
-const DoctorBookingForm = ({ selectedPetId }) => {
-    const { user } = useSelector((state) => state.auth);
-    const [doctors, setDoctors] = useState([]);
-    const [isLoading, setIsLoading] = useState(false);
-    const [message, setMessage] = useState(null);
+import './DoctorBookingForm.css';
+import { bookDoctorAppointment } from '../../api/appointmentService.js';
+import { getDoctors } from '../../api/doctorService.js';
 
-    // Form fields state
+const DoctorBookingForm = ({ pets, selectedPetId, userId }) => {
+    // Form state
+    const [doctors, setDoctors] = useState([]);
     const [selectedDoctorId, setSelectedDoctorId] = useState('');
-    const [serviceType, setServiceType] = useState('checkup');
+    const [serviceType, setServiceType] = useState('Check-up');
     const [dateTime, setDateTime] = useState('');
     const [comments, setComments] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Fetch the list of doctors when the component mounts
+    // Fetch doctors on component load
     useEffect(() => {
         const fetchDoctors = async () => {
             try {
-                const doctorList = await getDoctors();
-                setDoctors(doctorList);
-                // Set a default doctor if list is not empty
-                if (doctorList.length > 0) {
-                    setSelectedDoctorId(doctorList[0].id);
+                const doctorsList = await getDoctors();
+                setDoctors(doctorsList);
+                if (doctorsList.length > 0) {
+                    setSelectedDoctorId(doctorsList[0].id); // Default to first doctor
                 }
             } catch (error) {
-                console.error("Failed to fetch doctors:", error);
-                setMessage({ type: 'error', text: 'Could not load doctor list.' });
+                console.error("Failed to fetch doctors", error);
             }
         };
         fetchDoctors();
-    }, []); // Empty array ensures this runs only once on mount
+    }, []);
+
+    // Safe find logic
+    const selectedPet = (pets || []).find(p => p.pet_id === selectedPetId);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         if (!selectedPetId) {
-            setMessage({ type: 'error', text: 'Please select a pet first.' });
+            alert('Please select a pet first.');
             return;
         }
-        if (!dateTime || !selectedDoctorId) {
-            setMessage({ type: 'error', text: 'Please select a doctor and a date/time.' });
+        if (!dateTime) {
+            alert('Please select a date and time.');
+            return;
+        }
+        if (!selectedDoctorId) {
+            alert('Please select a doctor.');
             return;
         }
 
         setIsLoading(true);
-        setMessage(null);
-
         const appointmentData = {
-            userId: user.id,
+            userId,
             petId: selectedPetId,
             doctorId: selectedDoctorId,
-            type: 'Medical', // Main category
-            service: serviceType, // Specific service
-            dateTime: dateTime,
-            comments: comments,
+            serviceType,
+            dateTime,
+            comments,
         };
 
         try {
-            await bookGrooming(appointmentData);
-            setMessage({ type: 'success', text: 'Doctor appointment booked successfully!' });
+            await bookDoctorAppointment(appointmentData);
 
-            // Reset form
-            setServiceType('checkup');
+            alert(`Appointment requested for ${selectedPet ? selectedPet.pet_name : 'your pet'}! An admin will confirm it soon.`);
+            // Clear the form
             setDateTime('');
             setComments('');
         } catch (error) {
-            setMessage({ type: 'error', text: 'Failed to book appointment. Please try again.' });
-            console.error("Booking failed:", error);
+            console.error("Failed to book appointment:", error);
+            alert("Failed to book appointment. Please try again.");
         }
         setIsLoading(false);
     };
 
     return (
         <div className="appointment-form-container">
-            <h3>Book a Doctor Appointment</h3>
-            <p>Select a doctor, service, and time for your pet.</p>
-
+            <h3>Book a Doctor's Appointment</h3>
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="doctorSelect">Doctor</label>
+                    <label htmlFor="doctor-select">Doctor</label>
                     <select
-                        id="doctorSelect"
+                        id="doctor-select"
                         value={selectedDoctorId}
                         onChange={(e) => setSelectedDoctorId(e.target.value)}
                     >
-                        {doctors.length === 0 ? (
-                            <option value="">Loading doctors...</option>
-                        ) : (
+                        {doctors.length > 0 ? (
                             doctors.map(doc => (
                                 <option key={doc.id} value={doc.id}>
                                     {doc.name} ({doc.specialization})
                                 </option>
                             ))
+                        ) : (
+                            <option value="">Loading doctors...</option>
                         )}
                     </select>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="medicalService">Service Type</label>
+                    <label htmlFor="doctor-service">Service Type</label>
                     <select
-                        id="medicalService"
+                        id="doctor-service"
                         value={serviceType}
                         onChange={(e) => setServiceType(e.target.value)}
                     >
-                        <option value="checkup">General Check-up</option>
-                        <option value="vaccination">Vaccination</option>
-                        <option value="consultation">Specialist Consultation</option>
+                        <option value="Check-up">Annual Check-up</option>
+                        <option value="Vaccination">Vaccination</option>
+                        <option value="Injury">Injury/Sickness</option>
+                        <option value="Other">Other (See comments)</option>
                     </select>
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="medicalDateTime">Date and Time</label>
+                    <label htmlFor="doctor-datetime">Date & Time</label>
                     <input
                         type="datetime-local"
-                        id="medicalDateTime"
+                        id="doctor-datetime"
                         value={dateTime}
                         onChange={(e) => setDateTime(e.target.value)}
-                        min={new Date().toISOString().slice(0, 16)} // Prevent booking in the past
+                        min={new Date().toISOString().slice(0, 16)}
                     />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="medicalComments">Reason for Visit (Optional)</label>
+                    <label htmlFor="doctor-comments">Comments / Reason for Visit</label>
                     <textarea
-                        id="medicalComments"
-                        rows="3"
+                        id="doctor-comments"
                         value={comments}
                         onChange={(e) => setComments(e.target.value)}
-                        placeholder="E.g., coughing, annual checkup, skin irritation..."
-                    ></textarea>
+                        placeholder="e.g., vaccination records, symptoms..."
+                    />
                 </div>
 
-                <button type="submit" className="submit-button" disabled={!selectedPetId || isLoading}>
-                    {isLoading ? 'Booking...' : 'Book Appointment'}
+                <button type="submit" className="submit-button" disabled={isLoading || !selectedPetId}>
+                    {isLoading ? 'Booking...' : (selectedPetId ? 'Request Appointment' : 'Please select a pet')}
                 </button>
-
-                {message && (
-                    <p className={`form-message ${message.type}`}>
-                        {message.text}
-                    </p>
-                )}
             </form>
         </div>
     );

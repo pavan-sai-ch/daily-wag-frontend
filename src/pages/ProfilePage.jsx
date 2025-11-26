@@ -1,50 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import './ProfilePage.css';
-import { getPetsByUserId, addPet, updatePet, removePet } from '../api/petService';
-import PetList from '../components/pets/PetList';
-import PetFormModal from '../components/pets/PetFormModal';
-import ConfirmModal from '../components/common/ConfirmModal';
+
+// API Services
+import { getPetsByUserId, addPet, updatePet, removePet } from '../api/petService.js';
+import { getUserBookings } from '../api/appointmentService.js';
+import { getMyOrders } from '../api/storeService.js';
+
+// Components
+import PetList from '../components/pets/PetList.jsx';
+import PetFormModal from '../components/pets/PetFormModal.jsx';
+import ConfirmModal from '../components/common/ConfirmModal.jsx';
 
 const ProfilePage = () => {
-    // Get user data from the Redux store
     const { user } = useSelector((state) => state.auth);
 
-    // State for pets
-    const [pets, setPets] = useState([]);
+    // --- State ---
+    const [activeTab, setActiveTab] = useState('pets');
     const [isLoading, setIsLoading] = useState(true);
 
-    // State for modals
+    // Data
+    const [pets, setPets] = useState([]);
+    const [appointments, setAppointments] = useState([]);
+    const [orders, setOrders] = useState([]);
+
+    // Modal State (for Pets)
+    const [selectedPet, setSelectedPet] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
 
-    // State to track which pet is being edited or removed
-    const [selectedPet, setSelectedPet] = useState(null);
-
-    // Fetch user's pets when the component loads
+    // --- Fetch All Data on Load ---
     useEffect(() => {
-        const loadPets = async () => {
+        const loadDashboardData = async () => {
             if (user) {
+                setIsLoading(true);
                 try {
-                    const userPets = await getPetsByUserId(user.id);
-                    setPets(userPets);
+                    // Fetch all data in parallel
+                    const [petsData, appsData, ordersData] = await Promise.all([
+                        getPetsByUserId(user.id),
+                        getUserBookings(),
+                        getMyOrders()
+                    ]);
+
+                    setPets(petsData);
+                    setAppointments(appsData);
+                    setOrders(ordersData);
                 } catch (error) {
-                    console.error("Failed to load pets:", error);
-                    alert("Could not load your pets. Please try again.");
+                    console.error("Failed to load dashboard data:", error);
                 }
+                setIsLoading(false);
             }
-            setIsLoading(false);
         };
+        loadDashboardData();
+    }, [user]);
 
-        loadPets();
-    }, [user]); // The effect re-runs if the user object changes
-
-    // --- Modal "Open" Handlers ---
-
-    const handleAddPetClick = () => {
-        setIsAddModalOpen(true);
-    };
+    // --- Pet Handlers (Existing Logic) ---
+    const handleAddPetClick = () => setIsAddModalOpen(true);
 
     const handleEditPet = (pet) => {
         setSelectedPet(pet);
@@ -56,133 +68,170 @@ const ProfilePage = () => {
         setIsRemoveModalOpen(true);
     };
 
-    // --- Modal "Submit" Handlers ---
-
-    // Called from PetFormModal when in "Add" mode
     const onAddSubmit = async (petData) => {
-        setIsLoading(true);
         try {
             const newPet = await addPet(petData, user.id);
-            setPets([...pets, newPet]); // Add new pet to the local state
+            setPets([...pets, newPet]);
             setIsAddModalOpen(false);
         } catch (error) {
-            console.error("Failed to add pet:", error);
-            alert("Could not add pet. Please try again.");
+            alert("Failed to add pet.");
         }
-        setIsLoading(false);
     };
 
-    // Called from PetFormModal when in "Edit" mode
     const onUpdateSubmit = async (updatedData) => {
-        setIsLoading(true);
         try {
-            // Combine old pet data (like ID) with new form data
             const petToUpdate = { ...selectedPet, ...updatedData };
-            const updatedPet = await updatePet(petToUpdate);
-
-            // Update the pet in the local state
-            setPets(pets.map(p => p.id === updatedPet.id ? updatedPet : p));
+            await updatePet(petToUpdate);
+            setPets(pets.map(p => p.pet_id === petToUpdate.pet_id ? petToUpdate : p));
             setIsEditModalOpen(false);
-            setSelectedPet(null);
         } catch (error) {
-            console.error("Failed to update pet:", error);
-            alert("Could not update pet. Please try again.");
+            alert("Failed to update pet.");
         }
-        setIsLoading(false);
     };
 
-    // Called from ConfirmModal
     const onRemoveConfirm = async () => {
-        setIsLoading(true);
         try {
-            await removePet(selectedPet.id);
-            // Remove the pet from the local state
-            setPets(pets.filter(p => p.id !== selectedPet.id));
+            await removePet(selectedPet.pet_id);
+            setPets(pets.filter(p => p.pet_id !== selectedPet.pet_id));
             setIsRemoveModalOpen(false);
-            setSelectedPet(null);
         } catch (error) {
-            console.error("Failed to remove pet:", error);
-            alert("Could not remove pet. Please try again.");
+            alert("Failed to remove pet.");
         }
-        setIsLoading(false);
     };
 
-    // --- Render Logic ---
+    // --- Render Helpers ---
 
-    const renderPetSection = () => {
-        if (isLoading) {
-            return <p>Loading pets...</p>;
-        }
-
-        if (pets.length > 0) {
-            // This is the corrected part:
-            // We pass the handler functions down to PetList
-            return (
-                <PetList
-                    pets={pets}
-                    onEditPet={handleEditPet}
-                    onRemovePet={handleRemovePet}
-                />
-            );
-        }
-
-        return (
-            <div className="no-pets-view">
-                <h3>You haven't added any pets yet.</h3>
-                <p>Add your furry friends to get started!</p>
-                <button className="add-pet-button" onClick={handleAddPetClick}>
-                    Add a Pet
-                </button>
+    const renderPetsTab = () => (
+        <div className="tab-section">
+            <div className="section-header">
+                <h2>My Pets</h2>
+                <button className="add-btn" onClick={handleAddPetClick}>+ Add Pet</button>
             </div>
-        );
-    };
+            {pets.length > 0 ? (
+                <PetList pets={pets} onEditPet={handleEditPet} onRemovePet={handleRemovePet} />
+            ) : (
+                <p className="empty-state">You haven't added any pets yet.</p>
+            )}
+        </div>
+    );
+
+    const renderAppointmentsTab = () => (
+        <div className="tab-section">
+            <h2>My Appointments</h2>
+            {appointments.length === 0 ? (
+                <p className="empty-state">No upcoming appointments.</p>
+            ) : (
+                <table className="dashboard-table">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Service</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {appointments.map(app => (
+                        <tr key={app.booking_id}>
+                            <td>{new Date(app.booking_date).toLocaleString()}</td>
+                            <td><span className="type-badge">{app.booking_type}</span></td>
+                            <td>{app.service_type}</td>
+                            <td><span className={`status-badge ${app.status.toLowerCase()}`}>{app.status}</span></td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            )}
+        </div>
+    );
+
+    const renderOrdersTab = () => (
+        <div className="tab-section">
+            <h2>My Orders</h2>
+            {orders.length === 0 ? (
+                <p className="empty-state">No past orders.</p>
+            ) : (
+                <table className="dashboard-table">
+                    <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {orders.map(order => (
+                        <tr key={order.order_id}>
+                            <td>#{order.order_id}</td>
+                            <td>{new Date(order.order_date).toLocaleDateString()}</td>
+                            <td>${order.grand_total}</td>
+                            <td>{order.delivery_type}</td>
+                            <td><span className={`status-badge ${order.status.toLowerCase()}`}>{order.status}</span></td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+            )}
+        </div>
+    );
+
+    if (isLoading) return <div className="profile-container"><div className="loader"></div></div>;
 
     return (
         <div className="profile-container">
             <div className="profile-header">
-                <h1>Welcome, {user.firstName}!</h1>
-                <p>Manage your pets and account details here.</p>
+                <h1>Welcome, {user.first_name}!</h1>
+                <p>Manage your account and history.</p>
             </div>
 
-            <div className="pets-section">
-                <div className="pets-section-header">
-                    <h2>My Pets</h2>
-                    {/* Show "Add Pet" button in header if user already has pets */}
-                    {pets.length > 0 && !isLoading && (
-                        <button className="add-pet-button-small" onClick={handleAddPetClick}>
-                            + Add Pet
-                        </button>
-                    )}
-                </div>
-                {renderPetSection()}
+            <div className="profile-tabs">
+                <button
+                    className={activeTab === 'pets' ? 'active' : ''}
+                    onClick={() => setActiveTab('pets')}
+                >
+                    🐾 My Pets
+                </button>
+                <button
+                    className={activeTab === 'appointments' ? 'active' : ''}
+                    onClick={() => setActiveTab('appointments')}
+                >
+                    📅 Appointments
+                </button>
+                <button
+                    className={activeTab === 'orders' ? 'active' : ''}
+                    onClick={() => setActiveTab('orders')}
+                >
+                    📦 Orders
+                </button>
             </div>
 
-            {/* --- Modals --- */}
+            <div className="profile-content">
+                {activeTab === 'pets' && renderPetsTab()}
+                {activeTab === 'appointments' && renderAppointmentsTab()}
+                {activeTab === 'orders' && renderOrdersTab()}
+            </div>
 
-            {/* Add Pet Modal */}
+            {/* Modals */}
             <PetFormModal
-                mode="add"
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
                 onSubmit={onAddSubmit}
             />
-
-            {/* Edit Pet Modal */}
             <PetFormModal
-                mode="edit"
                 isOpen={isEditModalOpen}
                 onClose={() => setIsEditModalOpen(false)}
                 onSubmit={onUpdateSubmit}
                 initialData={selectedPet}
+                isEditMode={true}
             />
-
-            {/* Remove Pet Confirmation Modal */}
             <ConfirmModal
                 isOpen={isRemoveModalOpen}
                 onClose={() => setIsRemoveModalOpen(false)}
                 onConfirm={onRemoveConfirm}
                 title="Remove Pet"
-                message={`Are you sure you want to remove ${selectedPet?.name}? This action cannot be undone.`}
+                message={`Remove ${selectedPet?.pet_name}?`}
             />
         </div>
     );

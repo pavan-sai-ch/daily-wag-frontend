@@ -71,9 +71,9 @@ const PetCard = ({ pet, onEdit, onRemove }) => {
         <div className="pet-card">
             <div className="pet-card-icon">🐾</div>
             <div className="pet-card-info">
-                <h3>{pet.name}</h3>
-                <p>{pet.category} - {pet.breed}</p>
-                <p>{pet.age} {pet.age > 1 ? 'years' : 'year'} old</p>
+                <h3>{pet.pet_name}</h3>
+                <p>{pet.pet_category} - {pet.pet_breed}</p>
+                <p>{pet.pet_age} {pet.pet_age > 1 ? 'years' : 'year'} old</p>
             </div>
 
             {/* --- Kebab Button and Dropdown --- */}

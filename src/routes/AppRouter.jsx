@@ -2,42 +2,36 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 
 // --- Page Imports ---
-// Public Pages
-// Using absolute paths from /src/ to fix resolution issues
-import HomePage from '/src/pages/HomePage.jsx';
-import LoginPage from '/src/pages/LoginPage.jsx';
-import AdoptionPage from '/src/pages/AdoptionPage.jsx';
-import StorePage from '/src/pages/StorePage.jsx';
+// Changed from absolute '/src/...' to relative '../...' paths
+import HomePage from '../pages/HomePage.jsx';
+import LoginPage from '../pages/LoginPage.jsx';
+import AdoptionPage from '../pages/AdoptionPage.jsx';
+import StorePage from '../pages/StorePage.jsx';
 
 // Protected Pages
-import ProfilePage from '/src/pages/ProfilePage.jsx';
-import AppointmentsPage from '/src/pages/AppointmentsPage.jsx';
-import DoctorDashboardPage from '/src/pages/DoctorDashboardPage.jsx';
+import ProfilePage from '../pages/ProfilePage.jsx';
+import AppointmentsPage from '../pages/AppointmentsPage.jsx';
+import DoctorDashboardPage from '../pages/DoctorDashboardPage.jsx';
+import AdminDashboardPage from '../pages/AdminDashboardPage.jsx';
 
 // --- Route Protector Imports ---
-import RoleBasedRoute from '/src/routes/RoleBasedRoute.jsx';
-import AdminDashboardPage from "../pages/AdminDashboardPage.jsx";
+// Changed from '/src/routes/...' to relative './...' path
+import RoleBasedRoute from './RoleBasedRoute.jsx';
 
-/**
- * AppRouter
- * This component defines all the application's routes and maps them
- * to their corresponding page components. It uses RoleBasedRoute
- * to protect pages that require a specific user role.
- */
 const AppRouter = () => {
     return (
         <Routes>
-            {/* --- Public Routes (Visible to Everyone) --- */}
+            {/* --- Public Routes --- */}
             <Route path="/" element={<HomePage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/adoption" element={<AdoptionPage />} />
             <Route path="/store" element={<StorePage />} />
 
-            {/* --- Customer-Only Routes --- */}
+            {/* --- Customer/User Routes --- */}
             <Route
                 path="/profile"
                 element={
-                    <RoleBasedRoute allowedRoles={['customer']}>
+                    <RoleBasedRoute allowedRoles={['user']}>
                         <ProfilePage />
                     </RoleBasedRoute>
                 }
@@ -45,7 +39,7 @@ const AppRouter = () => {
             <Route
                 path="/appointments"
                 element={
-                    <RoleBasedRoute allowedRoles={['customer']}>
+                    <RoleBasedRoute allowedRoles={['user']}>
                         <AppointmentsPage />
                     </RoleBasedRoute>
                 }
@@ -60,6 +54,8 @@ const AppRouter = () => {
                     </RoleBasedRoute>
                 }
             />
+
+            {/* --- Admin-Only Route --- */}
             <Route
                 path="/admin/dashboard"
                 element={
@@ -68,13 +64,8 @@ const AppRouter = () => {
                     </RoleBasedRoute>
                 }
             />
-
-            {/* A "catch-all" 404 page could be added here later, e.g.:
-        <Route path="*" element={<NotFoundPage />} />
-      */}
         </Routes>
     );
 };
 
 export default AppRouter;
-
