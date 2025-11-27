@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { getAllProducts, getCart, addToCart, updateCartItem, removeFromCart, checkout } from '../api/storeService.js';
-import ProductList from '../store/ProductList.jsx';
+import ProductList from '../components/store/ProductList.jsx';
 import CartDrawer from '../components/store/CartDrawer.jsx';
 import './StorePage.css'; // We'll create this small layout file next
 

@@ -119,3 +119,30 @@
 .pet-menu-dropdown button.remove {
     color: #d93025;
 }
+.pet-card-image {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f0f7ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0; /* Prevent image from shrinking */
+}
+
+.pet-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.pet-card-icon {
+    font-size: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #007bff;
+    width: 100%;
+    height: 100%;
+}

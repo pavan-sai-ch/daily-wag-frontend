@@ -1,18 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import './ProfilePage.css';
 
 // API Services
 import { getPetsByUserId, addPet, updatePet, removePet } from '../api/petService.js';
 import { getUserBookings } from '../api/appointmentService.js';
 import { getMyOrders } from '../api/storeService.js';
+import { updateProfile } from '../api/authService.js';
+// Redux Actions
+import { loginSuccess } from '../store/authSlice.js';
 
 // Components
 import PetList from '../components/pets/PetList.jsx';
 import PetFormModal from '../components/pets/PetFormModal.jsx';
 import ConfirmModal from '../components/common/ConfirmModal.jsx';
+import EditProfileModal from '../components/profile/EditProfileModal.jsx'; // New Import
 
 const ProfilePage = () => {
+    const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth);
 
     // --- State ---
@@ -24,11 +29,12 @@ const ProfilePage = () => {
     const [appointments, setAppointments] = useState([]);
     const [orders, setOrders] = useState([]);
 
-    // Modal State (for Pets)
+    // Modal State
     const [selectedPet, setSelectedPet] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); // Profile Modal State
 
     // --- Fetch All Data on Load ---
     useEffect(() => {
@@ -36,7 +42,6 @@ const ProfilePage = () => {
             if (user) {
                 setIsLoading(true);
                 try {
-                    // Fetch all data in parallel
                     const [petsData, appsData, ordersData] = await Promise.all([
                         getPetsByUserId(user.id),
                         getUserBookings(),
@@ -55,7 +60,8 @@ const ProfilePage = () => {
         loadDashboardData();
     }, [user]);
 
-    // --- Pet Handlers (Existing Logic) ---
+    // --- Handlers ---
+
     const handleAddPetClick = () => setIsAddModalOpen(true);
 
     const handleEditPet = (pet) => {
@@ -96,6 +102,18 @@ const ProfilePage = () => {
             setIsRemoveModalOpen(false);
         } catch (error) {
             alert("Failed to remove pet.");
+        }
+    };
+
+    // Handle Profile Update
+    const handleUpdateProfile = async (updatedData) => {
+        try {
+            const updatedUser = await updateProfile(updatedData);
+            // Update Redux Store immediately so UI reflects changes
+            dispatch(loginSuccess(updatedUser));
+            alert("Profile updated successfully!");
+        } catch (error) {
+            alert("Failed to update profile: " + error.message);
         }
     };
 
@@ -182,8 +200,17 @@ const ProfilePage = () => {
     return (
         <div className="profile-container">
             <div className="profile-header">
-                <h1>Welcome, {user.first_name}!</h1>
-                <p>Manage your account and history.</p>
+                <h1>Welcome, {user.firstName}!</h1>
+
+                {/* --- Profile Summary & Edit Button --- */}
+                <div className="profile-details-summary">
+                    <p><strong>Email:</strong> {user.email}</p>
+                    <p><strong>Phone:</strong> {user.phone || 'Not set'}</p>
+                    <p><strong>Address:</strong> {user.address || 'Not set'}</p>
+                    <button className="edit-profile-btn" onClick={() => setIsProfileModalOpen(true)}>
+                        Edit Profile
+                    </button>
+                </div>
             </div>
 
             <div className="profile-tabs">
@@ -232,6 +259,14 @@ const ProfilePage = () => {
                 onConfirm={onRemoveConfirm}
                 title="Remove Pet"
                 message={`Remove ${selectedPet?.pet_name}?`}
+            />
+
+            {/* --- Edit Profile Modal --- */}
+            <EditProfileModal
+                isOpen={isProfileModalOpen}
+                onClose={() => setIsProfileModalOpen(false)}
+                user={user}
+                onUpdate={handleUpdateProfile}
             />
         </div>
     );

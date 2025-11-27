@@ -13,14 +13,64 @@
 .profile-header h1 {
     margin: 0;
     color: #333;
+    font-size: 2.5rem;
 }
 
-/* Tabs */
+.profile-header p {
+    color: #666;
+    margin-top: 0.5rem;
+}
+
+/* --- Profile Summary Box --- */
+.profile-details-summary {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background-color: #fdfdfd;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    display: inline-block;
+    text-align: left;
+    min-width: 320px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+}
+
+.profile-details-summary p {
+    margin: 0.8rem 0;
+    color: #444;
+    font-size: 0.95rem;
+}
+
+.profile-details-summary strong {
+    color: #333;
+    min-width: 80px;
+    display: inline-block;
+}
+
+.edit-profile-btn {
+    margin-top: 1.2rem;
+    background-color: #fff;
+    color: #007bff;
+    border: 1px solid #007bff;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.edit-profile-btn:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+/* --- Tabs --- */
 .profile-tabs {
     display: flex;
     justify-content: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
     border-bottom: 2px solid #eee;
 }
 
@@ -30,10 +80,11 @@
     padding: 1rem 1.5rem;
     font-size: 1.1rem;
     cursor: pointer;
-    color: #666;
+    color: #6c757d;
     font-weight: 600;
     border-bottom: 3px solid transparent;
     transition: all 0.3s;
+    margin-bottom: -2px; /* Sits on the line */
 }
 
 .profile-tabs button:hover {
@@ -45,43 +96,16 @@
     border-bottom-color: #007bff;
 }
 
-/* Tables */
-.dashboard-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+/* --- Tab Content Areas --- */
+.tab-section {
+    animation: fadeIn 0.3s ease-out;
 }
 
-.dashboard-table th, .dashboard-table td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid #eee;
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.dashboard-table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-    color: #555;
-}
-
-/* Badges */
-.status-badge {
-    padding: 0.25rem 0.6rem;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    text-transform: uppercase;
-}
-
-.status-badge.pending { background-color: #fff3cd; color: #856404; }
-.status-badge.confirmed { background-color: #d4edda; color: #155724; }
-.status-badge.shipped { background-color: #cce5ff; color: #004085; }
-.status-badge.cancelled { background-color: #f8d7da; color: #721c24; }
-
-/* General */
 .section-header {
     display: flex;
     justify-content: space-between;
@@ -89,21 +113,112 @@
     margin-bottom: 1.5rem;
 }
 
+.section-header h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #333;
+}
+
 .add-btn {
     background-color: #007bff;
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
 }
 
+.add-btn:hover {
+    background-color: #0056b3;
+}
+
+/* --- Data Tables --- */
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    border: 1px solid #eee;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    padding: 1.2rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dashboard-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #555;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dashboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+.dashboard-table tr:hover {
+    background-color: #fcfcfc;
+}
+
+/* --- Status Badges --- */
+.type-badge {
+    background-color: #e9ecef;
+    color: #495057;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    display: inline-block;
+}
+
+.status-badge.pending { background-color: #fff3cd; color: #856404; }
+.status-badge.confirmed, .status-badge.approved, .status-badge.completed, .status-badge.delivered { background-color: #d4edda; color: #155724; }
+.status-badge.processing { background-color: #cce5ff; color: #004085; }
+.status-badge.shipped { background-color: #e2e6ea; color: #333; }
+.status-badge.cancelled, .status-badge.denied { background-color: #f8d7da; color: #721c24; }
+
+/* --- Empty State --- */
 .empty-state {
     text-align: center;
-    padding: 3rem;
+    padding: 4rem;
     color: #999;
     font-style: italic;
     background: #f9f9f9;
     border-radius: 8px;
+    border: 1px dashed #ddd;
+}
+
+/* --- Loader --- */
+.loader {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 4rem auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

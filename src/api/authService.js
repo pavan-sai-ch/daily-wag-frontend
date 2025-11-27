@@ -1,7 +1,10 @@
-import api from './api';
+import api from './api.js';
 
 /**
  * Logs the user in via the PHP backend.
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<object>} The user object from the backend.
  */
 export const login = async (email, password) => {
     try {
@@ -19,6 +22,8 @@ export const login = async (email, password) => {
 
 /**
  * Registers a new user via the PHP backend.
+ * @param {object} userData (firstName, lastName, email, password)
+ * @returns {Promise<object>} The response data.
  */
 export const signup = async (userData) => {
     try {
@@ -33,6 +38,7 @@ export const signup = async (userData) => {
         throw new Error(message);
     }
 };
+
 /**
  * Checks if the user is already logged in via a session cookie.
  * @returns {Promise<object|null>} The user object if logged in, or null.
@@ -50,8 +56,11 @@ export const checkAuth = async () => {
         return null;
     }
 };
-// --- NEW ADDITION ---
-// Fetches all users (Admin only)
+
+/**
+ * Fetches all users (Admin only).
+ * @returns {Promise<Array>} List of users.
+ */
 export const getAllUsers = async () => {
     try {
         const response = await api.get('/users');
@@ -59,5 +68,24 @@ export const getAllUsers = async () => {
     } catch (error) {
         console.error("Failed to fetch users:", error);
         return [];
+    }
+};
+
+/**
+ * Updates the logged-in user's profile information.
+ * @param {object} profileData - { first_name, last_name, phone, address }
+ * @returns {Promise<object>} The updated user object.
+ */
+export const updateProfile = async (profileData) => {
+    try {
+        const response = await api.put('/auth/profile', profileData);
+        if (response.data.status === 'success') {
+            return response.data.user;
+        } else {
+            throw new Error(response.data.message || 'Update failed');
+        }
+    } catch (error) {
+        const message = error.response?.data?.message || error.message;
+        throw new Error(message);
     }
 };

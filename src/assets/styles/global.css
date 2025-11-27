@@ -1,0 +1,105 @@
+:root {
+    /* --- YEEZY PALETTE --- */
+    /* Earthy / Industrial Tones */
+    --color-bg: #F3F3F3;       /* Light Concrete */
+    --color-card-bg: #FFFFFF;  /* Stark White */
+    --color-text: #000000;     /* Pure Black */
+    --color-text-muted: #666666; /* Dark Grey */
+    --color-accent: #333333;   /* Charcoal */
+    --color-border: #E5E5E5;   /* Subtle Grey */
+
+    /* Action Colors */
+    --color-primary: #000000;  /* Buttons are black */
+    --color-primary-hover: #333333;
+    --color-danger: #FF3B30;   /* Minimalist Red */
+
+    /* --- TYPOGRAPHY --- */
+    /* Utilitarian / Raw feel */
+    --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    --font-mono: 'Courier New', Courier, monospace;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-main);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.4;
+}
+
+/* --- GLOBAL UTILITIES --- */
+
+h1, h2, h3, h4 {
+    font-weight: 700;
+    text-transform: uppercase; /* Key Yeezy feature */
+    letter-spacing: -0.5px;
+    margin-bottom: 1rem;
+}
+
+a {
+    color: var(--color-text);
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+a:hover {
+    opacity: 0.6;
+}
+
+/* --- BRUTALIST BUTTONS --- */
+button, .btn {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 0 !important; /* FORCE SQUARE CORNERS */
+    padding: 12px 24px;
+    font-family: var(--font-mono); /* Monospace for actions */
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+    box-shadow: none !important; /* No shadows allowed */
+}
+
+button:hover, .btn:hover {
+    background-color: var(--color-primary-hover);
+}
+
+button:disabled, .btn:disabled {
+    background-color: #CCCCCC;
+    color: #888888;
+    cursor: not-allowed;
+}
+
+/* --- FORM INPUTS --- */
+input, select, textarea {
+    background-color: transparent;
+    border: 1px solid #CCCCCC;
+    border-radius: 0 !important; /* Square inputs */
+    padding: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #000000; /* Sharp black border on focus */
+}
+
+/* --- LINK UTILITIES --- */
+.link-text {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    border-bottom: 1px solid transparent;
+}
+
+.link-text:hover {
+    border-bottom: 1px solid currentColor;
+}

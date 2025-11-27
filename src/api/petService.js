@@ -19,19 +19,40 @@ export const getPetsByUserId = async (userId) => {
 };
 
 /**
- * Adds a new pet to the database.
- * @param {object} petData - { pet_name, pet_category, pet_breed, pet_age, medical_condition }
+ * Adds a new pet to the database (handles File Uploads).
+ * @param {object} petData - { pet_name, ..., imageFile (optional) }
  */
 export const addPet = async (petData, userId) => {
     try {
-        // Ensure parameter names match your PHP Controller/Model expectations
-        const response = await api.post('/pets', petData);
+        let payload;
+        let headers = {};
 
-        // We return the new pet object to update the UI immediately
-        // The PHP response usually contains the new ID
+        // Check if we have a file to upload
+        if (petData.imageFile) {
+            payload = new FormData();
+            // Append all text fields
+            Object.keys(petData).forEach(key => {
+                if (key !== 'imageFile' && key !== 'tempPreview') {
+                    payload.append(key, petData[key]);
+                }
+            });
+            // Append the file (must match key 'image' in PHP)
+            payload.append('image', petData.imageFile);
+
+            // Let the browser set the Content-Type to multipart/form-data automatically
+            headers['Content-Type'] = 'multipart/form-data';
+        } else {
+            // Standard JSON payload
+            payload = petData;
+        }
+
+        const response = await api.post('/pets', payload, { headers });
+
+        // Return the new pet object (backend returns photo_url)
         return {
             ...petData,
-            pet_id: response.data.pet_id, // Ensure PHP returns this
+            pet_id: response.data.pet_id,
+            photo_url: response.data.photo_url || null, // Use the real URL from S3
             user_id: userId
         };
     } catch (error) {
@@ -46,6 +67,8 @@ export const addPet = async (petData, userId) => {
  */
 export const updatePet = async (petData) => {
     try {
+        // Note: For simplicity, this update currently handles text fields (JSON).
+        // Updating images via PUT usually requires a workaround or POST override.
         await api.put(`/pets/${petData.pet_id}`, petData);
         return petData; // Return updated data to update UI state
     } catch (error) {

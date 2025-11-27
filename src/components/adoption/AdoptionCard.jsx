@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './AdoptionCard.css'; // This import should now work
+import './AdoptionCard.css'; // Ensure this CSS file exists
 
 const AdoptionCard = ({ pet, onRequestAdoption }) => {
     const [isRequesting, setIsRequesting] = useState(false);
@@ -22,6 +22,7 @@ const AdoptionCard = ({ pet, onRequestAdoption }) => {
         <div className="adoption-card">
             <div className="pet-image-container">
                 <img
+                    // Use real S3 URL or a placeholder
                     src={pet.photo_url || 'https://placehold.co/300x300?text=No+Image'}
                     alt={pet.pet_name}
                     className="pet-image"
@@ -37,6 +38,7 @@ const AdoptionCard = ({ pet, onRequestAdoption }) => {
 
                 <p className="pet-breed">{pet.pet_breed}</p>
 
+                {/* Only show medical condition if it exists and isn't "None" */}
                 {pet.medical_condition && pet.medical_condition !== 'None' && (
                     <div className="medical-info">
                         <span className="medical-label">Health:</span> {pet.medical_condition}

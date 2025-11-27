@@ -1,121 +1,82 @@
 .adoption-card {
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 12px; /* Softer, rounder corners */
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    background: transparent;
+    border: none;
+    border-radius: 0;
     display: flex;
     flex-direction: column;
-    height: 100%;
 }
 
 .adoption-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    transform: none;
+    box-shadow: none;
+    opacity: 0.8;
 }
 
 .pet-image-container {
     width: 100%;
-    height: 220px; /* Slightly taller image area */
-    background-color: #f8f9fa;
+    aspect-ratio: 3 / 4; /* Portrait style for pets */
+    background-color: #E0E0E0;
+    margin-bottom: 1rem;
     position: relative;
-    overflow: hidden;
 }
 
 .pet-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
-}
-
-.adoption-card:hover .pet-image {
-    transform: scale(1.05); /* Subtle zoom effect on hover */
+    filter: grayscale(20%); /* Slight desaturation for that "raw" look */
 }
 
 .pet-category-badge {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background-color: rgba(255, 255, 255, 0.9);
-    color: #333;
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    display: none; /* Minimalist: Remove badges */
 }
 
 .pet-details {
-    padding: 1.5rem;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+    padding: 0;
 }
 
 .pet-header {
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 0.25rem;
+    flex-direction: column; /* Stack name and age */
+    margin-bottom: 0.5rem;
 }
 
 .pet-name {
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    font-weight: 800;
     margin: 0;
-    font-size: 1.4rem;
-    color: #2c3e50;
 }
 
 .pet-age {
-    color: #6c757d;
-    font-size: 0.9rem;
+    font-family: var(--font-mono);
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
 }
 
 .pet-breed {
-    color: #555;
-    font-weight: 500;
+    font-size: 0.9rem;
+    color: var(--color-text);
     margin: 0 0 1rem 0;
 }
 
 .medical-info {
-    background-color: #e9f7ef;
-    color: #155724;
-    padding: 0.5rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    margin-bottom: 1.5rem;
-}
-
-.medical-label {
-    font-weight: bold;
-}
-
-.pet-footer {
-    margin-top: auto;
+    display: none; /* Hide medical details on grid */
 }
 
 .adopt-btn {
     width: 100%;
-    padding: 0.8rem;
-    background-color: #ff6b6b; /* A warm, "heart" color */
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+    padding: 1rem;
+    background-color: #000;
+    color: #fff;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 1px solid transparent;
 }
 
 .adopt-btn:hover:not(:disabled) {
-    background-color: #ee5253;
-}
-
-.adopt-btn:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
+    background-color: white;
+    color: black;
+    border: 1px solid black;
 }

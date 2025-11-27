@@ -60,13 +60,36 @@ export const updateAdoptionStatus = async (adoptId, status) => {
         throw error;
     }
 };
+
 /**
- * (Admin) Adds a new pet directly to the adoption list.
- * @param {object} petData
+ * (Admin) Adds a new pet directly to the adoption list (handles File Uploads).
+ * @param {object} petData - { pet_name, ..., imageFile (optional) }
  */
 export const addAdoptionPet = async (petData) => {
     try {
-        const response = await api.post('/admin/pets', petData);
+        let payload;
+        let headers = {};
+
+        // Check if we have a file to upload
+        if (petData.imageFile) {
+            payload = new FormData();
+            // Append all text fields
+            Object.keys(petData).forEach(key => {
+                if (key !== 'imageFile' && key !== 'tempPreview') {
+                    payload.append(key, petData[key]);
+                }
+            });
+            // Append the file (must match key 'image' in PHP)
+            payload.append('image', petData.imageFile);
+
+            // Let the browser set the Content-Type to multipart/form-data automatically
+            headers['Content-Type'] = 'multipart/form-data';
+        } else {
+            // Standard JSON payload
+            payload = petData;
+        }
+
+        const response = await api.post('/admin/pets', payload, { headers });
         return response.data;
     } catch (error) {
         console.error("Failed to add adoption pet:", error);
