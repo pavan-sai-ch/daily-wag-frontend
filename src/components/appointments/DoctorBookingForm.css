@@ -67,3 +67,61 @@
     background-color: #ccc;
     cursor: not-allowed;
 }
+
+/* --- Slots Grid Styling --- */
+
+.slots-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 0.8rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.slot-btn {
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+/* Available Slot (Default) */
+.slot-btn.available {
+    background-color: #fff;
+    color: #333;
+}
+.slot-btn.available:hover {
+    border-color: #007bff;
+    color: #007bff;
+    background-color: #f0f7ff;
+}
+
+/* Selected Slot */
+.slot-btn.selected {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+    box-shadow: 0 2px 5px rgba(0,123,255,0.3);
+}
+
+/* Booked/Unavailable Slot */
+.slot-btn.booked {
+    background-color: #f1f1f1;
+    color: #bbb;
+    border-color: #eee;
+    cursor: not-allowed;
+    text-decoration: line-through;
+}
+
+.slots-loading, .no-slots {
+    padding: 1rem;
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    background: #f9f9f9;
+    border-radius: 6px;
+}

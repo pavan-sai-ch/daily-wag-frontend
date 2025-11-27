@@ -1,50 +1,126 @@
 import React, { useState, useEffect } from 'react';
-import { getDoctors, updateDoctorHours } from '../../api/doctorService'; // <-- THE FIX IS HERE
-import './DoctorDashboard.css';
+import { getSchedule, setSchedule } from '../../api/scheduleService.js';
+import './DoctorDashboard.css'; // We'll add styles to this file
+
+const DAYS_OF_WEEK = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 const DoctorHours = ({ doctorId }) => {
-    const [hours, setHours] = useState('');
-    const [isEditing, setIsEditing] = useState(false);
+    const [schedule, setScheduleState] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSaving, setIsSaving] = useState(false);
 
-    // Fetch initial hours
+    // Fetch existing schedule on load
     useEffect(() => {
-        // Use the corrected function name here
-        const doc = getDoctors().find(d => d.id === doctorId);
-        if (doc) {
-            setHours(doc.clinicHours);
-        }
+        const fetchSchedule = async () => {
+            try {
+                const data = await getSchedule(doctorId);
+
+                // Convert the array from DB into an easy-to-use object keyed by day
+                // e.g., { "Monday": { start: "09:00", end: "17:00", is_active: 1 } }
+                const scheduleMap = {};
+                DAYS_OF_WEEK.forEach(day => {
+                    const dayData = data.find(d => d.day_of_week === day);
+                    scheduleMap[day] = {
+                        start: dayData ? dayData.start_time : '09:00',
+                        end: dayData ? dayData.end_time : '17:00',
+                        active: dayData ? Boolean(dayData.is_active) : false
+                    };
+                });
+                setScheduleState(scheduleMap);
+            } catch (error) {
+                console.error("Failed to load schedule", error);
+            }
+            setIsLoading(false);
+        };
+
+        if (doctorId) fetchSchedule();
     }, [doctorId]);
 
-    const handleSave = async () => {
-        try {
-            await updateDoctorHours(doctorId, hours);
-            setIsEditing(false);
-            alert("Hours updated!");
-        } catch (error) {
-            alert("Failed to update hours.");
-        }
+    const handleDayChange = (day, field, value) => {
+        setScheduleState(prev => ({
+            ...prev,
+            [day]: {
+                ...prev[day],
+                [field]: value
+            }
+        }));
     };
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            // Save each day sequentially
+            // In a real production app, we'd send one bulk update,
+            // but our current API endpoint handles one day at a time.
+            const promises = DAYS_OF_WEEK.map(day => {
+                const dayData = schedule[day];
+                return setSchedule({
+                    day: day,
+                    start: dayData.start,
+                    end: dayData.end,
+                    active: dayData.active,
+                    doctor_id: doctorId
+                });
+            });
+
+            await Promise.all(promises);
+            alert("Schedule updated successfully!");
+        } catch (error) {
+            console.error(error);
+            alert("Failed to update schedule.");
+        }
+        setIsSaving(false);
+    };
+
+    if (isLoading) return <p>Loading schedule...</p>;
 
     return (
         <div className="dashboard-widget">
             <h3>My Clinic Hours</h3>
-            {isEditing ? (
-                <>
-                    <textarea
-                        className="hours-textarea"
-                        value={hours}
-                        onChange={(e) => setHours(e.target.value)}
-                    />
-                    <button className="save-button" onClick={handleSave}>Save</button>
-                    <button className="cancel-button" onClick={() => setIsEditing(false)}>Cancel</button>
-                </>
-            ) : (
-                <>
-                    {/* <pre> tag respects whitespace and newlines, good for this */}
-                    <pre className="hours-display">{hours}</pre>
-                    <button className="edit-button" onClick={() => setIsEditing(true)}>Update Hours</button>
-                </>
-            )}
+            <p className="widget-subtitle">Set your availability for appointments.</p>
+
+            <div className="schedule-grid">
+                {DAYS_OF_WEEK.map(day => (
+                    <div key={day} className={`schedule-row ${schedule[day]?.active ? 'active' : 'inactive'}`}>
+                        <div className="day-label">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={schedule[day]?.active || false}
+                                    onChange={(e) => handleDayChange(day, 'active', e.target.checked)}
+                                />
+                                {day}
+                            </label>
+                        </div>
+
+                        <div className="time-inputs">
+                            <input
+                                type="time"
+                                value={schedule[day]?.start}
+                                disabled={!schedule[day]?.active}
+                                onChange={(e) => handleDayChange(day, 'start', e.target.value)}
+                            />
+                            <span>to</span>
+                            <input
+                                type="time"
+                                value={schedule[day]?.end}
+                                disabled={!schedule[day]?.active}
+                                onChange={(e) => handleDayChange(day, 'end', e.target.value)}
+                            />
+                        </div>
+                    </div>
+                ))}
+            </div>
+
+            <div className="widget-footer">
+                <button
+                    className="save-button"
+                    onClick={handleSave}
+                    disabled={isSaving}
+                >
+                    {isSaving ? 'Saving...' : 'Save Schedule'}
+                </button>
+            </div>
         </div>
     );
 };
