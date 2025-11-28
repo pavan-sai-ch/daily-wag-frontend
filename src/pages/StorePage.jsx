@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { getAllProducts, getCart, addToCart, updateCartItem, removeFromCart, checkout } from '../api/storeService.js';
 import ProductList from '../components/store/ProductList.jsx';
 import CartDrawer from '../components/store/CartDrawer.jsx';
-import './StorePage.css'; // We'll create this small layout file next
+import './StorePage.css';
 
 const StorePage = () => {
     const { user } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
 
-    // State
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState({ items: [], totalItems: 0, subtotal: 0 });
     const [isCartOpen, setIsCartOpen] = useState(false);
@@ -37,10 +38,9 @@ const StorePage = () => {
         }
         try {
             await addToCart(itemId, quantity);
-            // Refresh cart to get updated totals
             const updatedCart = await getCart();
             setCart(updatedCart);
-            setIsCartOpen(true); // Open drawer to show item added
+            setIsCartOpen(true);
         } catch (error) {
             alert("Failed to add item.");
         }
@@ -66,20 +66,21 @@ const StorePage = () => {
         }
     };
 
-    const handleCheckout = async () => {
-        // For now, we'll assume 'delivery' and 'card' as defaults.
-        // In a real app, you'd show a checkout form modal here first.
-        const confirm = window.confirm(`Ready to checkout? Total: $${cart.subtotal}`);
-        if (!confirm) return;
-
+    const handleCheckout = async (checkoutOptions) => {
         try {
-            // NOTE: Ensure your user has an address if delivery is chosen!
-            // You can add logic here to check user.address from Redux.
-            await checkout({ payment_method: 'card', delivery_type: 'delivery' });
-            alert("Order placed successfully!");
+            await checkout(checkoutOptions);
+
+            // --- NEW: SUCCESS FLOW ---
+            // 1. Clear the cart state immediately
             setCart({ items: [], totalItems: 0, subtotal: 0 });
             setIsCartOpen(false);
+
+            // 2. Redirect to Profile -> Orders Tab
+            // We pass 'initialTab' in state so ProfilePage knows where to look
+            navigate('/profile', { state: { initialTab: 'orders' } });
+
         } catch (error) {
+            // Show backend error message (e.g. "Address required")
             alert(error.response?.data?.message || "Checkout failed.");
         }
     };
@@ -87,8 +88,8 @@ const StorePage = () => {
     return (
         <div className="store-container">
             <div className="store-header">
-                <h1>The Daily Wag Store</h1>
-                <p>Essentials for your furry friends.</p>
+                <h1>Store</h1>
+                {/*<p>Essentials for your furry friends.</p>*/}
 
                 <button className="view-cart-btn" onClick={() => setIsCartOpen(true)}>
                     🛒 View Cart ({cart.totalItems})

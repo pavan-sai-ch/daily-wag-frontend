@@ -2,32 +2,34 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 80vh; /* Takes up most of the screen height */
+    min-height: 80vh;
     padding: 2rem;
-    font-family: sans-serif;
-    background-color: #f8f9fa; /* Light background for the page */
+    background-color: var(--color-bg);
 }
 
 .login-form-card {
     width: 100%;
-    max-width: 400px; /* Limits the width of the form */
-    padding: 2.5rem;
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    padding: 40px;
+    background-color: transparent; /* Remove white box */
+    border: 1px solid #000; /* Sharp black border instead of shadow */
+    border-radius: 0;
     text-align: center;
 }
 
 .login-form-card h2 {
-    margin-top: 0;
+    font-size: 1.5rem;
     margin-bottom: 0.5rem;
-    font-size: 1.8rem;
-    color: #333;
+    text-transform: uppercase;
+    letter-spacing: -1px;
 }
 
 .login-form-card p {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
     margin-bottom: 2rem;
-    color: #6c757d;
+    text-transform: uppercase;
 }
 
 .form-group {
@@ -38,70 +40,54 @@
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: #555;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: #000;
 }
 
 .form-group input {
-    width: 100%;
-    padding: 0.75rem;
+    background-color: #fff;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1rem;
-    box-sizing: border-box; /* Important for consistent sizing */
+    border-radius: 0;
+    padding: 12px;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
 }
 
 .submit-button {
     width: 100%;
-    padding: 0.8rem;
+    margin-top: 1rem;
+    background-color: #000;
+    color: #fff;
     border: none;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: white;
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+    padding: 14px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-size: 0.8rem;
 }
 
 .submit-button:hover {
-    background-color: #0056b3;
+    background-color: #333;
 }
 
 .toggle-view {
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
-    color: #555;
+    margin-top: 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--color-text-muted);
 }
 
 .toggle-view button {
     background: none;
     border: none;
-    color: #007bff;
-    font-weight: bold;
-    cursor: pointer;
-    padding-left: 5px;
-}
-
-
-
-/* ---- Error Message Styling ---- */
-.error-message {
-    color: #d93025; /* A standard error red color */
-    font-size: 0.8rem;
-    text-align: left;
-    margin-top: 4px;
-}
-
-.error-list {
-    list-style-type: none; /* Removes bullet points */
     padding: 0;
-    margin: 8px 0 0 0;
-    text-align: left;
-    font-size: 0.8rem;
-    color: #d93025;
-}
-
-.error-list li {
-    margin-bottom: 4px;
+    margin-left: 5px;
+    color: #000;
+    text-decoration: underline;
+    cursor: pointer;
+    font-weight: 700;
 }

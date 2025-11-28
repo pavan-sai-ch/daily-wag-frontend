@@ -41,9 +41,9 @@ const PetFormModal = ({ isOpen, onClose, onSubmit, initialData, isEditMode = fal
     const handleFileChange = (e) => {
         const file = e.target.files[0];
         if (file) {
-            // 1. Check Size (3MB limit)
-            if (file.size > 3 * 1024 * 1024) {
-                alert("File size must be less than 3MB");
+            // 1. Check Size (10MB limit)
+            if (file.size > 10 * 1024 * 1024) {
+                alert("File size must be less than 10MB");
                 return;
             }
 

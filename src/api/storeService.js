@@ -112,7 +112,6 @@ export const checkout = async (checkoutData) => {
 };
 
 /**
- * --- THIS IS THE FIX ---
  * Fetches the order history for the logged-in user.
  * @returns {Promise<Array>} List of orders
  */
@@ -123,5 +122,59 @@ export const getMyOrders = async () => {
     } catch (error) {
         console.error("Failed to fetch order history:", error);
         return [];
+    }
+};
+
+// --- Admin Functions (New) ---
+
+export const addProduct = async (productData) => {
+    try {
+        // Use FormData for file upload
+        const payload = new FormData();
+        Object.keys(productData).forEach(key => {
+            if (key !== 'imageFile') payload.append(key, productData[key]);
+        });
+        if (productData.imageFile) {
+            payload.append('image', productData.imageFile);
+        }
+
+        const response = await api.post('/admin/products', payload, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Add product failed:", error);
+        throw error;
+    }
+};
+
+export const updateProduct = async (productId, productData) => {
+    try {
+        const payload = new FormData();
+        Object.keys(productData).forEach(key => {
+            if (key !== 'imageFile') payload.append(key, productData[key]);
+        });
+        if (productData.imageFile) {
+            payload.append('image', productData.imageFile);
+        }
+
+        // Note: We use POST for updates to handle the file easily
+        const response = await api.post(`/admin/products/${productId}`, payload, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data;
+    } catch (error) {
+        console.error("Update product failed:", error);
+        throw error;
+    }
+};
+
+export const deleteProduct = async (productId) => {
+    try {
+        await api.delete(`/admin/products/${productId}`);
+        return true;
+    } catch (error) {
+        console.error("Delete product failed:", error);
+        throw error;
     }
 };

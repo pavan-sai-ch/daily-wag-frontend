@@ -13,7 +13,7 @@ import ProfilePage from '../pages/ProfilePage.jsx';
 import AppointmentsPage from '../pages/AppointmentsPage.jsx';
 import DoctorDashboardPage from '../pages/DoctorDashboardPage.jsx';
 import AdminDashboardPage from '../pages/AdminDashboardPage.jsx';
-
+import MembershipPage from '../pages/MembershipPage.jsx';
 // --- Route Protector Imports ---
 // Changed from '/src/routes/...' to relative './...' path
 import RoleBasedRoute from './RoleBasedRoute.jsx';
@@ -26,7 +26,7 @@ const AppRouter = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/adoption" element={<AdoptionPage />} />
             <Route path="/store" element={<StorePage />} />
-
+            <Route path="/membership" element={<MembershipPage />} />
             {/* --- Customer/User Routes --- */}
             <Route
                 path="/profile"

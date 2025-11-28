@@ -9,8 +9,6 @@ import api from './api.js';
 export const getPetsByUserId = async (userId) => {
     try {
         const response = await api.get('/pets');
-        // PHP returns the array of pets directly or inside a data property
-        // Adjust depending on your BaseController response format
         return response.data;
     } catch (error) {
         console.error("Failed to fetch pets:", error);
@@ -39,7 +37,6 @@ export const addPet = async (petData, userId) => {
             // Append the file (must match key 'image' in PHP)
             payload.append('image', petData.imageFile);
 
-            // Let the browser set the Content-Type to multipart/form-data automatically
             headers['Content-Type'] = 'multipart/form-data';
         } else {
             // Standard JSON payload
@@ -52,7 +49,7 @@ export const addPet = async (petData, userId) => {
         return {
             ...petData,
             pet_id: response.data.pet_id,
-            photo_url: response.data.photo_url || null, // Use the real URL from S3
+            photo_url: response.data.photo_url || null,
             user_id: userId
         };
     } catch (error) {
@@ -67,10 +64,29 @@ export const addPet = async (petData, userId) => {
  */
 export const updatePet = async (petData) => {
     try {
-        // Note: For simplicity, this update currently handles text fields (JSON).
-        // Updating images via PUT usually requires a workaround or POST override.
-        await api.put(`/pets/${petData.pet_id}`, petData);
-        return petData; // Return updated data to update UI state
+        let payload;
+        let headers = {};
+
+        if (petData.imageFile) {
+            payload = new FormData();
+            Object.keys(petData).forEach(key => {
+                if (key !== 'imageFile' && key !== 'tempPreview') {
+                    payload.append(key, petData[key]);
+                }
+            });
+            payload.append('image', petData.imageFile);
+            headers['Content-Type'] = 'multipart/form-data';
+        } else {
+            payload = petData;
+        }
+
+        // Using POST to update (for file support)
+        const response = await api.post(`/pets/${petData.pet_id}`, payload, { headers });
+
+        return {
+            ...petData,
+            photo_url: response.data.photo_url || petData.photo_url
+        };
     } catch (error) {
         console.error("Failed to update pet:", error);
         throw error;
@@ -98,7 +114,6 @@ export const removePet = async (petId) => {
  */
 export const getAllPets = async () => {
     try {
-        // Connect to the real backend endpoint
         const response = await api.get('/admin/pets');
         return response.data;
     } catch (error) {
@@ -107,21 +122,33 @@ export const getAllPets = async () => {
     }
 };
 
-// --- Immunization Functions ---
+// --- Immunization Functions (UPDATED) ---
 
 /**
  * Fetches immunization records for a pet.
- * NOTE: We haven't built the PHP Immunization Controller yet,
- * so we will keep this as a MOCK for now to prevent errors.
+ * @param {number} petId
  */
 export const getImmunizationRecords = async (petId) => {
-    // Mock delay
-    await new Promise(resolve => setTimeout(resolve, 300));
+    try {
+        // Call the REAL API endpoint
+        const response = await api.get(`/pets/${petId}/immunizations`);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to fetch immunization records:", error);
+        return [];
+    }
+};
 
-    // Return default mock data
-    return [
-        { id: 'imm1', name: 'Rabies', date: '2024-01-15', status: 'Up to Date' },
-        { id: 'imm2', name: 'Bordetella', date: '2024-01-15', status: 'Up to Date' },
-        { id: 'imm3', name: 'Canine Distemper', date: 'Not Set', status: 'Pending' }
-    ];
+/**
+ * Adds a new immunization record.
+ * @param {object} recordData { pet_id, vaccine_name, vaccine_date, due_date, comments }
+ */
+export const addImmunizationRecord = async (recordData) => {
+    try {
+        const response = await api.post('/immunizations', recordData);
+        return response.data;
+    } catch (error) {
+        console.error("Failed to add immunization:", error);
+        throw error;
+    }
 };

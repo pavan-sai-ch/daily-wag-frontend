@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import './ProfilePage.css';
 
 // API Services
@@ -7,6 +8,8 @@ import { getPetsByUserId, addPet, updatePet, removePet } from '../api/petService
 import { getUserBookings } from '../api/appointmentService.js';
 import { getMyOrders } from '../api/storeService.js';
 import { updateProfile } from '../api/authService.js';
+import { getMembershipStatus } from '../api/membershipService.js';
+
 // Redux Actions
 import { loginSuccess } from '../store/authSlice.js';
 
@@ -14,27 +17,29 @@ import { loginSuccess } from '../store/authSlice.js';
 import PetList from '../components/pets/PetList.jsx';
 import PetFormModal from '../components/pets/PetFormModal.jsx';
 import ConfirmModal from '../components/common/ConfirmModal.jsx';
-import EditProfileModal from '../components/profile/EditProfileModal.jsx'; // New Import
+import EditProfileModal from '../components/profile/EditProfileModal.jsx';
 
 const ProfilePage = () => {
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth);
+    const location = useLocation();
 
     // --- State ---
-    const [activeTab, setActiveTab] = useState('pets');
+    const [activeTab, setActiveTab] = useState(location.state?.initialTab || 'pets');
     const [isLoading, setIsLoading] = useState(true);
 
     // Data
     const [pets, setPets] = useState([]);
     const [appointments, setAppointments] = useState([]);
     const [orders, setOrders] = useState([]);
+    const [membership, setMembership] = useState(null);
 
     // Modal State
     const [selectedPet, setSelectedPet] = useState(null);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
-    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false); // Profile Modal State
+    const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
     // --- Fetch All Data on Load ---
     useEffect(() => {
@@ -42,15 +47,17 @@ const ProfilePage = () => {
             if (user) {
                 setIsLoading(true);
                 try {
-                    const [petsData, appsData, ordersData] = await Promise.all([
+                    const [petsData, appsData, ordersData, memberData] = await Promise.all([
                         getPetsByUserId(user.id),
                         getUserBookings(),
-                        getMyOrders()
+                        getMyOrders(),
+                        getMembershipStatus()
                     ]);
 
                     setPets(petsData);
                     setAppointments(appsData);
                     setOrders(ordersData);
+                    setMembership(memberData);
                 } catch (error) {
                     console.error("Failed to load dashboard data:", error);
                 }
@@ -74,46 +81,89 @@ const ProfilePage = () => {
         setIsRemoveModalOpen(true);
     };
 
+    // --- OPTIMISTIC HANDLERS ---
+
     const onAddSubmit = async (petData) => {
+        const tempId = 'temp_' + Date.now();
+        const optimisticPet = {
+            ...petData,
+            pet_id: tempId,
+            user_id: user.id,
+            photo_url: petData.tempPreview || null,
+            adoption_status: 'not_available'
+        };
+
+        setIsAddModalOpen(false);
+        setPets(prevPets => [...prevPets, optimisticPet]);
+
         try {
             const newPet = await addPet(petData, user.id);
-            setPets([...pets, newPet]);
-            setIsAddModalOpen(false);
+            setPets(prevPets => prevPets.map(p =>
+                p.pet_id === tempId ? newPet : p
+            ));
         } catch (error) {
-            alert("Failed to add pet.");
+            console.error("Failed to add pet:", error);
+            alert("Failed to add pet. Please try again.");
+            setPets(prevPets => prevPets.filter(p => p.pet_id !== tempId));
         }
     };
 
     const onUpdateSubmit = async (updatedData) => {
+        const previousPets = [...pets];
+        const optimisticPet = {
+            ...selectedPet,
+            ...updatedData,
+            photo_url: updatedData.tempPreview || selectedPet.photo_url
+        };
+
+        setIsEditModalOpen(false);
+        setPets(prevPets => prevPets.map(p =>
+            p.pet_id === selectedPet.pet_id ? optimisticPet : p
+        ));
+
         try {
-            const petToUpdate = { ...selectedPet, ...updatedData };
-            await updatePet(petToUpdate);
-            setPets(pets.map(p => p.pet_id === petToUpdate.pet_id ? petToUpdate : p));
-            setIsEditModalOpen(false);
+            const result = await updatePet({ ...selectedPet, ...updatedData });
+            setPets(prevPets => prevPets.map(p =>
+                p.pet_id === selectedPet.pet_id ? result : p
+            ));
+            setSelectedPet(null);
         } catch (error) {
+            console.error("Failed to update pet:", error);
             alert("Failed to update pet.");
+            setPets(previousPets);
         }
     };
 
     const onRemoveConfirm = async () => {
+        const previousPets = [...pets];
+        const idToRemove = selectedPet.pet_id;
+
+        setIsRemoveModalOpen(false);
+        setPets(prevPets => prevPets.filter(p => p.pet_id !== idToRemove));
+
         try {
-            await removePet(selectedPet.pet_id);
-            setPets(pets.filter(p => p.pet_id !== selectedPet.pet_id));
-            setIsRemoveModalOpen(false);
+            await removePet(idToRemove);
+            setSelectedPet(null);
         } catch (error) {
+            console.error("Failed to remove pet:", error);
             alert("Failed to remove pet.");
+            setPets(previousPets);
         }
     };
 
-    // Handle Profile Update
     const handleUpdateProfile = async (updatedData) => {
+        const previousUser = { ...user };
+        const optimisticUser = { ...user, ...updatedData };
+
+        dispatch(loginSuccess(optimisticUser));
+        setIsProfileModalOpen(false);
+
         try {
-            const updatedUser = await updateProfile(updatedData);
-            // Update Redux Store immediately so UI reflects changes
-            dispatch(loginSuccess(updatedUser));
-            alert("Profile updated successfully!");
+            const realUpdatedUser = await updateProfile(updatedData);
+            dispatch(loginSuccess(realUpdatedUser));
         } catch (error) {
             alert("Failed to update profile: " + error.message);
+            dispatch(loginSuccess(previousUser));
         }
     };
 
@@ -200,9 +250,15 @@ const ProfilePage = () => {
     return (
         <div className="profile-container">
             <div className="profile-header">
-                <h1>Welcome, {user.firstName}!</h1>
+                <h1 className="welcome-title">
+                    Welcome, {user.firstName}!
+                    {membership && (
+                        <span className={`membership-badge ${membership.plan_details.toLowerCase()}`}>
+                            {membership.plan_details} MEMBER
+                        </span>
+                    )}
+                </h1>
 
-                {/* --- Profile Summary & Edit Button --- */}
                 <div className="profile-details-summary">
                     <p><strong>Email:</strong> {user.email}</p>
                     <p><strong>Phone:</strong> {user.phone || 'Not set'}</p>
@@ -240,7 +296,6 @@ const ProfilePage = () => {
                 {activeTab === 'orders' && renderOrdersTab()}
             </div>
 
-            {/* Modals */}
             <PetFormModal
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
@@ -261,7 +316,6 @@ const ProfilePage = () => {
                 message={`Remove ${selectedPet?.pet_name}?`}
             />
 
-            {/* --- Edit Profile Modal --- */}
             <EditProfileModal
                 isOpen={isProfileModalOpen}
                 onClose={() => setIsProfileModalOpen(false)}

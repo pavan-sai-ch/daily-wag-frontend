@@ -1,22 +1,21 @@
 :root {
-    /* --- YEEZY PALETTE --- */
-    /* Earthy / Industrial Tones */
-    --color-bg: #F3F3F3;       /* Light Concrete */
-    --color-card-bg: #FFFFFF;  /* Stark White */
+    /* --- YEEZY / BRUTALIST PALETTE --- */
+    --color-bg: #F2F2F2;       /* Concrete Grey */
     --color-text: #000000;     /* Pure Black */
-    --color-text-muted: #666666; /* Dark Grey */
-    --color-accent: #333333;   /* Charcoal */
-    --color-border: #E5E5E5;   /* Subtle Grey */
+    --color-text-muted: #666666;
+    --color-accent: #333333;
 
-    /* Action Colors */
-    --color-primary: #000000;  /* Buttons are black */
-    --color-primary-hover: #333333;
-    --color-danger: #FF3B30;   /* Minimalist Red */
+    /* No "Primary" colors like blue/green. Just Black/White/Red */
+    --color-action: #000000;
+    --color-white: #FFFFFF;
+    --color-danger: #FF0000;   /* System Red */
 
     /* --- TYPOGRAPHY --- */
-    /* Utilitarian / Raw feel */
+    /* The signature Yeezy look is Monospace or Helvetica Bold */
     --font-main: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     --font-mono: 'Courier New', Courier, monospace;
+
+    --spacing-unit: 20px;
 }
 
 body {
@@ -26,80 +25,68 @@ body {
     color: var(--color-text);
     font-family: var(--font-main);
     -webkit-font-smoothing: antialiased;
+    font-size: 13px; /* Smaller, utility-style text */
     line-height: 1.4;
 }
 
 /* --- GLOBAL UTILITIES --- */
 
 h1, h2, h3, h4 {
-    font-weight: 700;
-    text-transform: uppercase; /* Key Yeezy feature */
+    font-weight: 900;
+    text-transform: uppercase;
     letter-spacing: -0.5px;
-    margin-bottom: 1rem;
+    margin: 0 0 1rem 0;
 }
 
 a {
     color: var(--color-text);
     text-decoration: none;
-    transition: opacity 0.2s;
-}
-
-a:hover {
-    opacity: 0.6;
+    cursor: pointer;
 }
 
 /* --- BRUTALIST BUTTONS --- */
 button, .btn {
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: 0 !important; /* FORCE SQUARE CORNERS */
-    padding: 12px 24px;
-    font-family: var(--font-mono); /* Monospace for actions */
+    background-color: var(--color-action);
+    color: var(--color-white);
+    border: 1px solid var(--color-action);
+    border-radius: 0 !important; /* STRICTLY SQUARE */
+    padding: 12px 20px;
+    font-family: var(--font-mono);
     text-transform: uppercase;
-    font-size: 0.85rem;
-    font-weight: bold;
+    font-size: 11px;
+    font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.2s, color 0.2s;
-    box-shadow: none !important; /* No shadows allowed */
+    transition: all 0.1s;
+    box-shadow: none !important;
+    letter-spacing: 1px;
 }
 
 button:hover, .btn:hover {
-    background-color: var(--color-primary-hover);
+    background-color: transparent;
+    color: var(--color-action);
 }
 
 button:disabled, .btn:disabled {
     background-color: #CCCCCC;
+    border-color: #CCCCCC;
     color: #888888;
     cursor: not-allowed;
 }
 
 /* --- FORM INPUTS --- */
 input, select, textarea {
-    background-color: transparent;
-    border: 1px solid #CCCCCC;
-    border-radius: 0 !important; /* Square inputs */
-    padding: 10px;
+    background-color: #FFFFFF;
+    border: 1px solid #E5E5E5;
+    border-radius: 0 !important;
+    padding: 12px;
     font-family: var(--font-mono);
-    font-size: 0.9rem;
+    font-size: 12px;
     width: 100%;
     box-sizing: border-box;
-    transition: border-color 0.2s;
+    color: #000;
 }
 
 input:focus, select:focus, textarea:focus {
     outline: none;
-    border-color: #000000; /* Sharp black border on focus */
-}
-
-/* --- LINK UTILITIES --- */
-.link-text {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    border-bottom: 1px solid transparent;
-}
-
-.link-text:hover {
-    border-bottom: 1px solid currentColor;
+    border-color: #000000;
 }

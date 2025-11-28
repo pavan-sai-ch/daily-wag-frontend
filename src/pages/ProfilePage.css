@@ -1,104 +1,155 @@
+/* --- YEEZY / BRUTALIST PROFILE PAGE --- */
+
 .profile-container {
-    max-width: 1000px;
-    margin: 2rem auto;
-    padding: 1rem;
-    font-family: sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #f4f4f4;
+    min-height: 100vh;
 }
 
+/* --- Header --- */
 .profile-header {
-    text-align: center;
-    margin-bottom: 2rem;
+    text-align: left;
+    margin-bottom: 4rem;
+    border-bottom: 4px solid #000;
+    padding-bottom: 2rem;
 }
 
 .profile-header h1 {
     margin: 0;
-    color: #333;
-    font-size: 2.5rem;
-}
-
-.profile-header p {
-    color: #666;
-    margin-top: 0.5rem;
+    color: #000;
+    font-size: 3rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
 }
 
 /* --- Profile Summary Box --- */
 .profile-details-summary {
-    margin-top: 1.5rem;
-    padding: 1.5rem;
-    background-color: #fdfdfd;
-    border: 1px solid #eee;
-    border-radius: 12px;
-    display: inline-block;
-    text-align: left;
-    min-width: 320px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    margin-top: 2rem;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    color: #666;
 }
 
 .profile-details-summary p {
-    margin: 0.8rem 0;
-    color: #444;
-    font-size: 0.95rem;
+    margin: 0.5rem 0;
 }
 
 .profile-details-summary strong {
-    color: #333;
-    min-width: 80px;
+    color: #000;
+    min-width: 100px;
     display: inline-block;
 }
 
 .edit-profile-btn {
-    margin-top: 1.2rem;
-    background-color: #fff;
-    color: #007bff;
-    border: 1px solid #007bff;
-    padding: 0.6rem 1rem;
-    border-radius: 6px;
+    margin-top: 1.5rem;
+    background-color: transparent;
+    color: #000;
+    border: 1px solid #000;
+    padding: 10px 20px;
+    border-radius: 0;
     cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 600;
-    width: 100%;
-    transition: all 0.2s ease;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    width: auto;
+    display: inline-block;
 }
 
 .edit-profile-btn:hover {
-    background-color: #007bff;
-    color: white;
+    background-color: #000;
+    color: #fff;
 }
+
+/* --- Membership Badges --- */
+.membership-badge {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+    border-radius: 0;
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 1px;
+    border: 1px solid #000;
+    background: transparent;
+    margin-left: 1rem;
+    vertical-align: middle;
+    display: inline-block;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+}
+
+.membership-badge.silver {
+    background: linear-gradient(135deg, #e0e0e0 0%, #ffffff 50%, #e0e0e0 100%);
+    border-color: #999;
+    color: #333;
+}
+
+.membership-badge.gold {
+    background: linear-gradient(135deg, #ffd700 0%, #fffbe0 50%, #d4af37 100%);
+    border-color: #b8860b;
+    color: #8a6d0b;
+}
+
+.membership-badge.platinum {
+    background: linear-gradient(135deg, #333 0%, #555 50%, #000 100%);
+    color: #fff;
+    border-color: #000;
+}
+
 
 /* --- Tabs --- */
 .profile-tabs {
     display: flex;
-    justify-content: center;
-    gap: 1.5rem;
-    margin-bottom: 2.5rem;
-    border-bottom: 2px solid #eee;
+    justify-content: flex-start;
+    gap: 0;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid #000;
 }
 
 .profile-tabs button {
-    background: none;
-    border: none;
-    padding: 1rem 1.5rem;
-    font-size: 1.1rem;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    padding: 1rem 2rem;
+    font-size: 0.9rem;
     cursor: pointer;
-    color: #6c757d;
-    font-weight: 600;
-    border-bottom: 3px solid transparent;
-    transition: all 0.3s;
-    margin-bottom: -2px; /* Sits on the line */
+    color: #999;
+    font-weight: 700;
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    margin-right: -1px;
+    border-radius: 0;
 }
 
 .profile-tabs button:hover {
-    color: #007bff;
+    background-color: #f9f9f9;
+    color: #000;
 }
 
 .profile-tabs button.active {
-    color: #007bff;
-    border-bottom-color: #007bff;
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
 }
 
 /* --- Tab Content Areas --- */
 .tab-section {
     animation: fadeIn 0.3s ease-out;
+    /* Important: Allow horizontal scroll for tables on small screens */
+    overflow-x: auto;
 }
 
 @keyframes fadeIn {
@@ -110,56 +161,64 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #000;
+    padding-bottom: 1rem;
 }
 
 .section-header h2 {
     margin: 0;
     font-size: 1.5rem;
-    color: #333;
+    color: #000;
+    text-transform: uppercase;
+    letter-spacing: -0.5px;
 }
 
 .add-btn {
-    background-color: #007bff;
-    color: white;
+    background-color: #000;
+    color: #fff;
     border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
+    padding: 10px 20px;
+    border-radius: 0;
     cursor: pointer;
-    font-weight: bold;
-    font-size: 0.9rem;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
     transition: background-color 0.2s;
 }
 
 .add-btn:hover {
-    background-color: #0056b3;
+    background-color: #333;
 }
 
-/* --- Data Tables --- */
+/* --- Data Tables (THE FIX) --- */
 .dashboard-table {
     width: 100%;
     border-collapse: collapse;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    border: 1px solid #eee;
-}
-
-.dashboard-table th,
-.dashboard-table td {
-    padding: 1.2rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid #f0f0f0;
+    background: #fff; /* White background for readability */
+    border: 1px solid #000; /* Solid outer border */
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    margin-bottom: 2rem;
 }
 
 .dashboard-table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-    color: #555;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    text-align: left;
+    padding: 1rem;
+    background-color: #000; /* Black header */
+    color: #fff; /* White text */
+    font-weight: 700;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #000;
+}
+
+.dashboard-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid #ccc;
+    color: #000;
+    vertical-align: middle;
 }
 
 .dashboard-table tr:last-child td {
@@ -167,50 +226,77 @@
 }
 
 .dashboard-table tr:hover {
-    background-color: #fcfcfc;
+    background-color: #f0f0f0; /* Clear hover state */
 }
 
-/* --- Status Badges --- */
+/* --- Status Badges in Table --- */
 .type-badge {
-    background-color: #e9ecef;
-    color: #495057;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
-    text-transform: capitalize;
+    font-weight: 700;
+    color: #000;
+    text-transform: uppercase;
+    background: #e0e0e0;
+    padding: 2px 6px;
+    border: 1px solid #000;
+    font-size: 0.7rem;
 }
 
 .status-badge {
-    padding: 0.35rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
-    display: inline-block;
+    border: 1px solid #000;
+    background: transparent;
+    color: #000;
 }
 
-.status-badge.pending { background-color: #fff3cd; color: #856404; }
-.status-badge.confirmed, .status-badge.approved, .status-badge.completed, .status-badge.delivered { background-color: #d4edda; color: #155724; }
-.status-badge.processing { background-color: #cce5ff; color: #004085; }
-.status-badge.shipped { background-color: #e2e6ea; color: #333; }
-.status-badge.cancelled, .status-badge.denied { background-color: #f8d7da; color: #721c24; }
+/* Status Modifiers */
+.status-badge.pending {
+    border-color: #999;
+    color: #666;
+    border-style: dashed;
+}
+
+.status-badge.confirmed,
+.status-badge.approved,
+.status-badge.completed,
+.status-badge.delivered {
+    background-color: #000;
+    color: #fff;
+    border-color: #000;
+}
+
+.status-badge.shipped,
+.status-badge.processing {
+    background-color: #ccc;
+    color: #000;
+    border-color: #ccc;
+}
+
+.status-badge.cancelled,
+.status-badge.denied {
+    border-color: #d93025;
+    color: #d93025;
+    text-decoration: line-through;
+}
 
 /* --- Empty State --- */
 .empty-state {
-    text-align: center;
-    padding: 4rem;
+    text-align: left;
+    padding: 4rem 0;
     color: #999;
-    font-style: italic;
-    background: #f9f9f9;
-    border-radius: 8px;
-    border: 1px dashed #ddd;
+    font-family: 'Courier New', Courier, monospace;
+    text-transform: uppercase;
+    font-style: normal;
+    background: transparent;
+    border-bottom: 1px solid #eee;
 }
 
 /* --- Loader --- */
 .loader {
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #007bff;
+    border: 4px solid #eee;
+    border-top: 4px solid #000;
     border-radius: 50%;
     width: 40px;
     height: 40px;

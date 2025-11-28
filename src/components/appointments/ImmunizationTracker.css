@@ -1,69 +1,64 @@
 .immunization-container {
     padding: 2rem;
-    background-color: #fdfdfd;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    margin-top: 2rem; /* Space between this and the form above */
+    background-color: #fff;
+    border: 1px solid #000; /* Sharp border box */
+    border-radius: 0;
+    margin-top: 3rem;
 }
 
 .immunization-container h3 {
     margin-top: 0;
     margin-bottom: 1.5rem;
-    font-size: 1.8rem;
-    color: #333;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 1rem;
+    font-size: 1.5rem;
+    color: #000;
+    border-bottom: 4px solid #000;
+    padding-bottom: 0.5rem;
+    text-transform: uppercase;
 }
 
 .immunization-table {
     width: 100%;
-    border-collapse: collapse; /* Clean, modern table lines */
-    font-size: 0.95rem;
-}
-
-.immunization-table th,
-.immunization-table td {
-    text-align: left;
-    padding: 0.9rem 0.5rem;
-    border-bottom: 1px solid #f0f0f0; /* Light row separator */
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    text-transform: uppercase;
 }
 
 .immunization-table th {
-    color: #6c757d;
-    font-weight: 600;
-    text-transform: uppercase;
-    font-size: 0.8rem;
+    text-align: left;
+    padding: 1rem;
+    background-color: #000;
+    color: #fff;
+    font-weight: 400;
+    letter-spacing: 1px;
 }
 
 .immunization-table td {
-    color: #333;
+    padding: 1rem;
+    border-bottom: 1px solid #ccc;
+    color: #000;
 }
 
-/* --- Status Pill Styling --- */
+/* --- Status Styling --- */
 .status-pill {
     display: inline-block;
-    padding: 0.3rem 0.75rem;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 0.8rem;
-    background-color: #eee;
-    color: #555;
+    padding: 2px 6px;
+    border-radius: 0;
+    font-weight: 700;
+    font-size: 0.7rem;
+    border: 1px solid #000;
+    background: transparent !important;
+    color: #000 !important;
 }
 
 .status-pill.pending {
-    background-color: #fff8e1; /* Light yellow */
-    color: #f59e0b; /* Dark yellow */
+    border-color: #f59e0b;
+    color: #f59e0b !important;
 }
 
 .status-pill.up-to-date {
-    background-color: #e6f7ec; /* Light green */
-    color: #28a745; /* Dark green */
+    border-color: #28a745;
+    background-color: #28a745 !important;
+    color: white !important;
+    border: none;
 }
-
-.loading-message {
-    padding: 2rem;
-    text-align: center;
-    color: #6c757d;
-    font-style: italic;
-}
-

@@ -1,148 +1,160 @@
+/* --- Pet Grid Layout (Yeezy Style) --- */
 .pet-list-container {
     display: grid;
-    grid-template-columns: 1fr; /* One column on small screens */
-    gap: 1.5rem;
+    /* Large, blocky grid */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 40px 20px;
+    padding: 2rem 0;
 }
 
+/* --- Pet Card Container --- */
 .pet-card {
-    background: #fdfdfd;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    padding: 1.5rem;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
     display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative; /* Critical for absolute positioning of menu */
 }
 
-.pet-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-}
-
-.pet-card-icon {
-    font-size: 2.5rem;
-    background: #f0f7ff;
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #007bff;
-}
-
-.pet-card-info {
-    flex-grow: 1;
-}
-
-.pet-card-info h3 {
-    margin: 0 0 0.25rem 0;
-    color: #333;
-}
-
-.pet-card-info p {
-    margin: 0;
-    color: #6c757d;
-    font-size: 0.9rem;
-}
-
-.pet-card-options {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    color: #aaa;
-    padding: 0.5rem;
-}
-
-/* Responsive layout for wider screens */
-@media (min-width: 768px) {
-    .pet-list-container {
-        grid-template-columns: repeat(2, 1fr); /* Two columns on tablets and up */
-    }
-}
-
-.pet-card {
-    position: relative;
-}
-
-/* The kebab button (⋮) */
-.pet-card-options {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    font-weight: bold;
-    cursor: pointer;
-    color: #aaa;
-    padding: 0.5rem;
-    line-height: 1;
-    position: relative;
-    z-index: 10;
-}
-
-/* The dropdown menu itself */
-.pet-menu-dropdown {
-    display: block; /* React handles showing/hiding, so this can just be block */
-    position: absolute;
-    top: 40px; /* Position it below the button */
-    right: 1.5rem; /* Align to the right side of the card */
-    background: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 0.5rem 0; /* Space for the buttons inside */
-    width: 160px;
-    z-index: 100; /* Make sure it's on top */
-    border: 1px solid #eee;
-}
-
-/* The buttons inside the dropdown */
-.pet-menu-dropdown button {
-    display: block;
-    width: 100%;
-    padding: 0.75rem 1rem;
-    background: none;
-    border: none;
-    text-align: left;
-    font-size: 0.9rem;
-    color: #333;
-    cursor: pointer;
-}
-
-.pet-menu-dropdown button:hover {
-    background-color: #f8f9fa;
-}
-
-/* Special color for the remove button */
-.pet-menu-dropdown button.remove {
-    color: #d93025;
-}
+/* --- Pet Image --- */
 .pet-card-image {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Square photos */
+    border-radius: 0;
     overflow: hidden;
-    background: #f0f7ff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-shrink: 0; /* Prevent image from shrinking */
+    background: #e0e0e0;
+    border: none;
+    margin-bottom: 0.5rem;
+    position: relative;
 }
 
 .pet-card-image img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    filter: grayscale(100%); /* B&W aesthetic */
+    transition: filter 0.3s;
+}
+
+.pet-card:hover .pet-card-image img {
+    filter: grayscale(0%); /* Color on hover */
 }
 
 .pet-card-icon {
-    font-size: 2.5rem;
+    font-size: 3rem;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: #007bff;
+    color: #000;
     width: 100%;
     height: 100%;
+    background-color: #f0f0f0;
+}
+
+/* --- Pet Details (Typography) --- */
+.pet-card-info {
+    width: 100%;
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+}
+
+.pet-card-info h3 {
+    margin: 0 0 0.5rem 0;
+    color: #000;
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+}
+
+.pet-card-info p {
+    margin: 0;
+    color: #666;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+/* --- KEBAB MENU (FIXED) --- */
+
+/* 1. Container for the button & dropdown */
+.pet-card-options {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 50; /* Ensure it sits above the image */
+}
+
+/* 2. The "Three Dots" Button */
+.pet-card-options-button {
+    background: #ffffff !important; /* Solid white backing so you can see it */
+    border: 1px solid #000 !important;
+    color: #000 !important;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 0 !important; /* Square button */
+    transition: all 0.2s;
+    padding-bottom: 10px !important; /* Visual tweak to center the dots */
+}
+
+.pet-card-options-button:hover {
+    background: #000 !important;
+    color: #fff !important;
+}
+
+/* 3. The Dropdown Menu List */
+.pet-menu-dropdown {
+    position: absolute;
+    top: 100%; /* Directly below button */
+    right: 0;
+    margin-top: 5px;
+    background-color: #ffffff;
+    border: 1px solid #000; /* Hard black border */
+    min-width: 180px;
+    z-index: 100; /* Float above everything */
+    box-shadow: 4px 4px 0px rgba(0,0,0,0.1); /* Slight brutalist shadow */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 4. Dropdown Items */
+.pet-menu-dropdown button {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #eee;
+    padding: 12px 16px;
+    text-align: left;
+
+    font-family: var(--font-mono);
+    text-transform: uppercase;
+    font-size: 11px;
+    font-weight: 700;
+    color: #000;
+
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.2s, color 0.2s;
+}
+
+.pet-menu-dropdown button:last-child {
+    border-bottom: none;
+}
+
+.pet-menu-dropdown button:hover {
+    background-color: #000;
+    color: #fff;
+}
+
+/* Remove Button Specifics */
+.pet-menu-dropdown button.remove:hover {
+    background-color: var(--color-danger); /* Red hover for delete */
+    color: #fff;
 }
