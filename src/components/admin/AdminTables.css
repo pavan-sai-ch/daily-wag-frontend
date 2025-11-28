@@ -1,74 +1,157 @@
-/* --- General Table Layout --- */
+/* --- YEEZY / BRUTALIST ADMIN TABLES (FIXED) --- */
+
 .admin-table-container {
-    font-family: var(--font-mono);
-    text-transform: uppercase;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: transparent;
+    width: 100%;
+    overflow-x: auto;
 }
 
-.admin-table-container h2 {
-    font-family: var(--font-main);
-    font-size: 1.5rem;
-    color: #000;
+/* Controls Header */
+.admin-controls-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 2rem;
-    border-left: 4px solid #000;
-    padding-left: 1rem;
+    border-bottom: 4px solid #000;
+    padding-bottom: 1rem;
 }
 
+.admin-controls-header h2 {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 900;
+    font-size: 2rem;
+    text-transform: uppercase;
+    margin: 0;
+    letter-spacing: -1px;
+    color: #000;
+}
+
+/* Main Table */
 .admin-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.8rem;
-    border: none;
+    font-size: 0.85rem;
+    border: 1px solid #000;
+    background-color: #fff;
+    table-layout: auto; /* Allow columns to size based on content */
 }
 
-/* Header Styling */
+/* Headers */
 .admin-table th {
     background-color: #000;
     color: #fff;
-    font-weight: 400;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: left;
     padding: 1rem;
-    border: none;
     letter-spacing: 1px;
+    border-bottom: 1px solid #000;
+    white-space: nowrap; /* Keep headers on one line */
 }
 
-/* Cell Styling */
+/* Cells */
 .admin-table td {
-    padding: 1rem;
-    border-bottom: 1px solid #ddd;
+    padding: 1.2rem 1rem;
+    border-bottom: 1px solid #ccc;
     color: #000;
-    vertical-align: middle;
+    vertical-align: middle; /* Center content vertically */
+}
+
+.admin-table tr:last-child td {
+    border-bottom: none;
 }
 
 .admin-table tr:hover {
-    background-color: #f9f9f9;
+    background-color: #f4f4f4;
 }
 
-/* --- Status Pills (Square Badges) --- */
+/* --- Specific Column Styling --- */
+
+/* Date Column */
+.date-cell {
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+/* Applicant Info */
+.applicant-cell div { /* Target inner div for stacking */
+    display: flex;
+    flex-direction: column;
+}
+.applicant-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    display: block;
+}
+.applicant-email {
+    color: #666;
+    font-size: 0.75rem;
+    margin-top: 4px;
+    text-transform: lowercase;
+    display: block;
+}
+
+/* Pet Info */
+.pet-cell div {
+    display: flex;
+    flex-direction: column;
+}
+.pet-name-bold {
+    font-weight: 900;
+    font-size: 1rem;
+    text-transform: uppercase;
+    display: block;
+}
+.pet-breed-sub {
+    color: #666;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    display: block;
+}
+
+/* --- Buttons & Badges --- */
+
 .status-pill {
     display: inline-block;
     padding: 4px 8px;
-    border-radius: 0; /* Square */
-    font-weight: 700;
-    font-size: 0.7rem;
-    border: 1px solid #000;
-    background: transparent !important; /* Transparent background */
-    color: #000 !important; /* Black text */
-}
-
-/* Use borders to distinguish status */
-.status-pill.pending { border-color: #f59e0b; color: #f59e0b !important; }
-.status-pill.confirmed { border-color: #000; background: #000 !important; color: #fff !important; }
-.status-pill.cancelled { border-color: #d93025; color: #d93025 !important; text-decoration: line-through; }
-
-/* --- Action Buttons --- */
-.action-btn {
-    padding: 6px 12px;
-    border: 1px solid #000;
-    border-radius: 0;
     font-size: 0.7rem;
     font-weight: 700;
     text-transform: uppercase;
+    border: 1px solid #000;
     background: transparent;
     color: #000;
+    white-space: nowrap;
+}
+
+.status-pill.pending { border-color: #f59e0b; color: #f59e0b; }
+.status-pill.confirmed, .status-pill.approved { background-color: #000; color: #fff; border-color: #000; }
+
+/* Action Buttons */
+.actions-cell {
+    white-space: nowrap; /* Prevent buttons from stacking */
+    text-align: center; /* Align to right as requested */
+    justify-content: space-between;
+}
+
+.action-buttons-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center; /* Push buttons to right */
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border: 1px solid #000;
+    background: transparent;
+    color: #000;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .action-btn:hover {
@@ -76,11 +159,12 @@
     color: #fff;
 }
 
-.action-btn.decline {
-    border-color: #d93025;
-    color: #d93025;
-}
-.action-btn.decline:hover {
-    background-color: #d93025;
-    color: white;
+.action-btn.decline { border-color: #d93025; color: #d93025; }
+.action-btn.decline:hover { background-color: #d93025; color: #fff; }
+.action-btn.add-new { background-color: #000; color: #fff; font-size: 0.9rem; }
+.action-btn.add-new:hover { background-color: #333; }
+.status-select{
+    max-width: 100px;
+    padding: 0.5rem;
+    margin-left: 5px;
 }

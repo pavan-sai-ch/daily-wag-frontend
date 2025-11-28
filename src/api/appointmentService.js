@@ -6,12 +6,10 @@ import api from './api.js';
  */
 export const bookGrooming = async (appointmentData) => {
     try {
-        // Helper: Ensure keys match what PHP expects (snake_case vs camelCase)
         const payload = {
             pet_id: appointmentData.petId,
             booking_date: appointmentData.dateTime,
             service_type: appointmentData.serviceType,
-            // comments: appointmentData.comments // Uncomment if you add a comments column to your DB
         };
 
         const response = await api.post('/bookings/grooming', payload);
@@ -28,10 +26,9 @@ export const bookGrooming = async (appointmentData) => {
  */
 export const bookDoctorAppointment = async (appointmentData) => {
     try {
-        // Helper: Ensure keys match what PHP expects
         const payload = {
             pet_id: appointmentData.petId,
-            doctor_id: appointmentData.doctorId, // Critical: Map doctorId to doctor_id
+            doctor_id: appointmentData.doctorId,
             booking_date: appointmentData.dateTime,
             service_type: appointmentData.serviceType,
         };
@@ -59,7 +56,6 @@ export const getUserBookings = async () => {
 
 /**
  * (Doctor) Fetches schedule for the logged-in doctor.
- * Note: The backend gets the doctor ID from the session, so no arg needed.
  */
 export const getAppointmentsByDoctorId = async () => {
     try {
@@ -95,6 +91,21 @@ export const updateAppointmentStatus = async (bookingId, status) => {
         return response.data;
     } catch (error) {
         console.error("Failed to update booking status:", error);
+        throw error;
+    }
+};
+
+/**
+ * --- NEW: Manual Check-In ---
+ * (Customer) Checks in for an appointment.
+ * @param {number} bookingId
+ */
+export const checkInBooking = async (bookingId) => {
+    try {
+        const response = await api.put(`/bookings/${bookingId}/checkin`);
+        return response.data;
+    } catch (error) {
+        // We re-throw the error so the UI can display the specific message (e.g. "Too early")
         throw error;
     }
 };

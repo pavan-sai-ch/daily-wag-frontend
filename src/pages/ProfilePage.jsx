@@ -5,7 +5,7 @@ import './ProfilePage.css';
 
 // API Services
 import { getPetsByUserId, addPet, updatePet, removePet } from '../api/petService.js';
-import { getUserBookings } from '../api/appointmentService.js';
+import { getUserBookings, checkInBooking } from '../api/appointmentService.js';
 import { getMyOrders } from '../api/storeService.js';
 import { updateProfile } from '../api/authService.js';
 import { getMembershipStatus } from '../api/membershipService.js';
@@ -68,20 +68,9 @@ const ProfilePage = () => {
     }, [user]);
 
     // --- Handlers ---
-
     const handleAddPetClick = () => setIsAddModalOpen(true);
-
-    const handleEditPet = (pet) => {
-        setSelectedPet(pet);
-        setIsEditModalOpen(true);
-    };
-
-    const handleRemovePet = (pet) => {
-        setSelectedPet(pet);
-        setIsRemoveModalOpen(true);
-    };
-
-    // --- OPTIMISTIC HANDLERS ---
+    const handleEditPet = (pet) => { setSelectedPet(pet); setIsEditModalOpen(true); };
+    const handleRemovePet = (pet) => { setSelectedPet(pet); setIsRemoveModalOpen(true); };
 
     const onAddSubmit = async (petData) => {
         const tempId = 'temp_' + Date.now();
@@ -167,6 +156,19 @@ const ProfilePage = () => {
         }
     };
 
+    // --- Check-In Handler ---
+    const handleCheckIn = async (bookingId) => {
+        try {
+            await checkInBooking(bookingId);
+            alert("Checked in successfully!");
+            const updatedBookings = await getUserBookings();
+            setAppointments(updatedBookings);
+        } catch (error) {
+            const msg = error.response?.data?.message || "Check-in failed.";
+            alert(msg);
+        }
+    };
+
     // --- Render Helpers ---
 
     const renderPetsTab = () => (
@@ -196,17 +198,61 @@ const ProfilePage = () => {
                         <th>Type</th>
                         <th>Service</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {appointments.map(app => (
-                        <tr key={app.booking_id}>
-                            <td>{new Date(app.booking_date).toLocaleString()}</td>
-                            <td><span className="type-badge">{app.booking_type}</span></td>
-                            <td>{app.service_type}</td>
-                            <td><span className={`status-badge ${app.status.toLowerCase()}`}>{app.status}</span></td>
-                        </tr>
-                    ))}
+                    {appointments.map(app => {
+                        const bookingDate = new Date(app.booking_date);
+                        const bookingTime = bookingDate.getTime();
+                        const now = Date.now();
+
+                        const oneHourBefore = bookingTime - (60 * 60 * 1000);
+                        const fifteenMinsAfter = bookingTime + (15 * 60 * 1000);
+
+                        const isTooEarly = now < oneHourBefore;
+                        const isTooLate = now > fifteenMinsAfter;
+                        const isWindowOpen = !isTooEarly && !isTooLate;
+                        const isConfirmed = app.status === 'Confirmed';
+
+                        // --- UPDATED: Date Formatting ---
+                        const checkInDateObj = new Date(oneHourBefore);
+                        const timeStr = checkInDateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        const dateStr = checkInDateObj.toLocaleDateString([], {month: 'numeric', day: 'numeric', year: '2-digit'});
+
+                        return (
+                            <tr key={app.booking_id}>
+                                <td>{bookingDate.toLocaleString()}</td>
+                                <td><span className="type-badge">{app.booking_type}</span></td>
+                                <td>{app.service_type}</td>
+                                <td><span className={`status-badge ${app.status.toLowerCase().replace(' ', '-')}`}>{app.status}</span></td>
+                                <td>
+                                    {isConfirmed ? (
+                                        isWindowOpen ? (
+                                            <button
+                                                className="action-btn approve"
+                                                style={{ padding: '6px 12px', fontSize: '0.7rem' }}
+                                                onClick={() => handleCheckIn(app.booking_id)}
+                                            >
+                                                CHECK IN
+                                            </button>
+                                        ) : isTooEarly ? (
+                                            // --- UPDATED: Display Text ---
+                                            <span style={{ color: '#999', fontSize: '0.75rem', fontStyle: 'italic' }}>
+                                                    Opens at {timeStr} on {dateStr}
+                                                </span>
+                                        ) : (
+                                            <span style={{ color: '#d93025', fontSize: '0.75rem' }}>
+                                                    Missed
+                                                </span>
+                                        )
+                                    ) : (
+                                        <span style={{ color: '#ccc', fontSize: '0.8rem' }}>-</span>
+                                    )}
+                                </td>
+                            </tr>
+                        );
+                    })}
                     </tbody>
                 </table>
             )}
@@ -296,32 +342,10 @@ const ProfilePage = () => {
                 {activeTab === 'orders' && renderOrdersTab()}
             </div>
 
-            <PetFormModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                onSubmit={onAddSubmit}
-            />
-            <PetFormModal
-                isOpen={isEditModalOpen}
-                onClose={() => setIsEditModalOpen(false)}
-                onSubmit={onUpdateSubmit}
-                initialData={selectedPet}
-                isEditMode={true}
-            />
-            <ConfirmModal
-                isOpen={isRemoveModalOpen}
-                onClose={() => setIsRemoveModalOpen(false)}
-                onConfirm={onRemoveConfirm}
-                title="Remove Pet"
-                message={`Remove ${selectedPet?.pet_name}?`}
-            />
-
-            <EditProfileModal
-                isOpen={isProfileModalOpen}
-                onClose={() => setIsProfileModalOpen(false)}
-                user={user}
-                onUpdate={handleUpdateProfile}
-            />
+            <PetFormModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onSubmit={onAddSubmit} />
+            <PetFormModal isOpen={isEditModalOpen} onClose={() => setIsEditModalOpen(false)} onSubmit={onUpdateSubmit} initialData={selectedPet} isEditMode={true} />
+            <ConfirmModal isOpen={isRemoveModalOpen} onClose={() => setIsRemoveModalOpen(false)} onConfirm={onRemoveConfirm} title="Remove Pet" message={`Remove ${selectedPet?.pet_name}?`} />
+            <EditProfileModal isOpen={isProfileModalOpen} onClose={() => setIsProfileModalOpen(false)} user={user} onUpdate={handleUpdateProfile} />
         </div>
     );
 };

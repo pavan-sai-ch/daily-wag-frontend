@@ -1,22 +1,18 @@
 import React, { useState, useEffect } from 'react';
-// Import the new service function
 import { getPendingRequests, updateAdoptionStatus, addAdoptionPet } from '../../api/adoptionService.js';
-// Import the PetFormModal we already built!
 import PetFormModal from '../pets/PetFormModal.jsx';
 import './AdminTables.css';
 
 const AdoptionManagement = () => {
     const [requests, setRequests] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
-
-    // Modal State
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
     const fetchRequests = async () => {
         setIsLoading(true);
         try {
             const data = await getPendingRequests();
-            setRequests(data);
+            setRequests(data || []);
         } catch (error) {
             console.error("Failed to fetch adoption requests");
         }
@@ -40,73 +36,77 @@ const AdoptionManagement = () => {
         }
     };
 
-    // Handle Adding a New Pet for Adoption
     const handleAddSubmit = async (petData) => {
         try {
             await addAdoptionPet(petData);
             alert("Pet successfully listed for adoption!");
             setIsAddModalOpen(false);
-            // Note: We don't update the 'requests' list here because
-            // adding a pet creates an 'available' pet, not a 'pending request'.
-            // The pet will immediately appear on the public Adoption Page.
         } catch (error) {
             alert("Failed to add pet.");
         }
     };
 
-    if (isLoading) return <p>Loading requests...</p>;
+    if (isLoading) return <p className="loading-text">LOADING REQUESTS...</p>;
 
     return (
         <div className="admin-table-container">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                <h2>Manage Adoption Requests</h2>
+            <div className="admin-controls-header">
+                <h2>MANAGE ADOPTION REQUESTS</h2>
                 <button
-                    className="action-btn approve"
-                    style={{ padding: '0.6rem 1.2rem', fontSize: '1rem' }}
+                    className="action-btn add-new"
                     onClick={() => setIsAddModalOpen(true)}
                 >
-                    + Add Pet for Adoption
+                    + ADD PET
                 </button>
             </div>
 
             <table className="admin-table">
                 <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Applicant</th>
-                    <th>Pet Requested</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <th style={{width: '15%'}}>DATE</th>
+                    <th style={{width: '25%'}}>APPLICANT</th>
+                    <th style={{width: '20%'}}>PET</th>
+                    <th style={{width: '15%'}}>STATUS</th>
+                    {/* FIX: Changed textAlign from right to center */}
+                    <th style={{width: '25%', textAlign: 'center'}}>ACTIONS</th>
                 </tr>
                 </thead>
                 <tbody>
                 {requests.length === 0 ? (
-                    <tr><td colSpan="5" className="empty-cell">No pending adoption requests.</td></tr>
+                    <tr><td colSpan="5" className="empty-cell">NO PENDING REQUESTS.</td></tr>
                 ) : (
                     requests.map(req => (
                         <tr key={req.adopt_id}>
-                            <td>{new Date(req.adoption_date).toLocaleDateString()}</td>
-                            <td>
-                                {req.first_name} {req.last_name}
-                                <br/><small>{req.email || 'No email'}</small>
+                            <td className="date-cell">{new Date(req.adoption_date).toLocaleDateString()}</td>
+                            <td className="applicant-cell">
+                                <div>
+                                    <span className="applicant-name">{req.first_name} {req.last_name}</span>
+                                    <span className="applicant-email">{req.email || 'Email Unavailable'}</span>
+                                </div>
+                            </td>
+                            <td className="pet-cell">
+                                <div>
+                                    <span className="pet-name-bold">{req.pet_name}</span>
+                                    <span className="pet-breed-sub">{req.pet_breed}</span>
+                                </div>
                             </td>
                             <td>
-                                <strong>{req.pet_name}</strong> ({req.pet_breed})
-                            </td>
-                            <td>
-                                <span className="status-pill pending">Pending</span>
+                                <span className="status-pill pending">PENDING</span>
                             </td>
                             <td className="actions-cell">
-                                <button
-                                    className="action-btn approve"
-                                    onClick={() => handleDecision(req.adopt_id, 'approved')}>
-                                    ✔ Approve
-                                </button>
-                                <button
-                                    className="action-btn decline"
-                                    onClick={() => handleDecision(req.adopt_id, 'denied')}>
-                                    ✖ Deny
-                                </button>
+                                {/* Wrapper will now justify-center via CSS */}
+                                <div className="action-buttons-wrapper">
+                                    <button
+                                        className="action-btn approve"
+                                        onClick={() => handleDecision(req.adopt_id, 'approved')}>
+                                        APPROVE
+                                    </button>
+                                    <button
+                                        className="action-btn decline"
+                                        onClick={() => handleDecision(req.adopt_id, 'denied')}>
+                                        DENY
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     ))
@@ -114,7 +114,6 @@ const AdoptionManagement = () => {
                 </tbody>
             </table>
 
-            {/* Reusing the PetFormModal */}
             <PetFormModal
                 isOpen={isAddModalOpen}
                 onClose={() => setIsAddModalOpen(false)}
