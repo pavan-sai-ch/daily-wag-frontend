@@ -1,17 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import Navbar from './components/layout/Navbar.jsx';
 import Footer from './components/layout/Footer.jsx';
 import AppRouter from './routes/AppRouter.jsx';
-import { loginSuccess, logout } from './store/authSlice';
-import { checkAuth } from './api/authService';
-import './assets/styles/global.css'; // Make sure global styles are imported
+import { loginSuccess, logout } from './store/authSlice.js';
+import { checkAuth } from './api/authService.js';
+import { logPageVisit } from './api/visitService.js';
+import './assets/styles/global.css';
+
+// Create a wrapper component to handle routing logic (useLocation)
+const AppContent = () => {
+    const location = useLocation();
+
+    // Track page views for analytics
+    useEffect(() => {
+        if (location.pathname) {
+            logPageVisit(location.pathname);
+        }
+    }, [location]);
+
+    return (
+        <div className="app-container">
+            <Navbar />
+            <main>
+                <AppRouter />
+            </main>
+            <Footer />
+        </div>
+    );
+};
 
 function App() {
     const dispatch = useDispatch();
     const [isAuthChecked, setIsAuthChecked] = useState(false);
 
+    // Check for existing session on app load
     useEffect(() => {
         const authenticateUser = async () => {
             try {
@@ -44,13 +68,7 @@ function App() {
 
     return (
         <BrowserRouter>
-            <div className="app-container">
-                <Navbar />
-                <main>
-                    <AppRouter />
-                </main>
-                <Footer />
-            </div>
+            <AppContent />
         </BrowserRouter>
     );
 }

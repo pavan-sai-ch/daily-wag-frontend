@@ -3,12 +3,20 @@ import api from './api.js';
 // --- Product Catalog ---
 
 /**
- * Fetches all available products from the store.
- * @returns {Promise<Array>} List of products
+ * Fetches available products from the store.
+ * Supports pagination via limit/offset AND search via 'search' param.
+ * @param {number} limit
+ * @param {number} offset
+ * @param {string} search (New)
  */
-export const getAllProducts = async () => {
+export const getAllProducts = async (limit = null, offset = 0, search = '') => {
     try {
-        const response = await api.get('/products');
+        const params = {};
+        if (limit !== null) params.limit = limit;
+        if (offset !== 0) params.offset = offset;
+        if (search) params.search = search;
+
+        const response = await api.get('/products', { params });
         return response.data;
     } catch (error) {
         console.error("Failed to fetch products:", error);
@@ -16,10 +24,6 @@ export const getAllProducts = async () => {
     }
 };
 
-/**
- * Fetches details for a single product.
- * @param {number} id - The product ID
- */
 export const getProductById = async (id) => {
     try {
         const response = await api.get(`/products/${id}`);
@@ -32,27 +36,16 @@ export const getProductById = async (id) => {
 
 // --- Shopping Cart ---
 
-/**
- * Gets the current user's cart from the session.
- * @returns {Promise<object>} { items: [], totalItems: 0, subtotal: 0.00 }
- */
 export const getCart = async () => {
     try {
         const response = await api.get('/cart');
         return response.data;
     } catch (error) {
-        // If the cart is empty or doesn't exist, return a default structure
-        // rather than throwing an error, to keep the UI stable.
         console.warn("Could not fetch cart (might be empty or user not logged in)");
         return { items: [], totalItems: 0, subtotal: 0 };
     }
 };
 
-/**
- * Adds an item to the cart.
- * @param {number} itemId
- * @param {number} quantity
- */
 export const addToCart = async (itemId, quantity = 1) => {
     try {
         const response = await api.post('/cart', {
@@ -66,11 +59,6 @@ export const addToCart = async (itemId, quantity = 1) => {
     }
 };
 
-/**
- * Updates the quantity of an item in the cart.
- * @param {number} itemId
- * @param {number} quantity
- */
 export const updateCartItem = async (itemId, quantity) => {
     try {
         const response = await api.put(`/cart/${itemId}`, { quantity });
@@ -81,10 +69,6 @@ export const updateCartItem = async (itemId, quantity) => {
     }
 };
 
-/**
- * Removes an item from the cart.
- * @param {number} itemId
- */
 export const removeFromCart = async (itemId) => {
     try {
         const response = await api.delete(`/cart/${itemId}`);
@@ -97,10 +81,6 @@ export const removeFromCart = async (itemId) => {
 
 // --- Checkout & Orders ---
 
-/**
- * Processes the checkout for the current cart.
- * @param {object} checkoutData - { payment_method: 'card'|'cash', delivery_type: 'pickup'|'delivery' }
- */
 export const checkout = async (checkoutData) => {
     try {
         const response = await api.post('/checkout', checkoutData);
@@ -111,10 +91,6 @@ export const checkout = async (checkoutData) => {
     }
 };
 
-/**
- * Fetches the order history for the logged-in user.
- * @returns {Promise<Array>} List of orders
- */
 export const getMyOrders = async () => {
     try {
         const response = await api.get('/orders/user');
@@ -125,11 +101,10 @@ export const getMyOrders = async () => {
     }
 };
 
-// --- Admin Functions (New) ---
+// --- Admin Functions ---
 
 export const addProduct = async (productData) => {
     try {
-        // Use FormData for file upload
         const payload = new FormData();
         Object.keys(productData).forEach(key => {
             if (key !== 'imageFile') payload.append(key, productData[key]);
@@ -158,7 +133,6 @@ export const updateProduct = async (productId, productData) => {
             payload.append('image', productData.imageFile);
         }
 
-        // Note: We use POST for updates to handle the file easily
         const response = await api.post(`/admin/products/${productId}`, payload, {
             headers: { 'Content-Type': 'multipart/form-data' }
         });
